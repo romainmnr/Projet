@@ -1,0 +1,1351 @@
+package rwb.java.vb.bo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.virtualbox_5_0.AuthType;
+import org.virtualbox_5_0.BitmapFormat;
+import org.virtualbox_5_0.ChipsetType;
+import org.virtualbox_5_0.ClipboardMode;
+import org.virtualbox_5_0.DnDMode;
+import org.virtualbox_5_0.ExportOptions;
+import org.virtualbox_5_0.IAppliance;
+import org.virtualbox_5_0.IConsole;
+import org.virtualbox_5_0.IDisplay;
+import org.virtualbox_5_0.IMachine;
+import org.virtualbox_5_0.IMedium;
+import org.virtualbox_5_0.IMediumAttachment;
+import org.virtualbox_5_0.INetworkAdapter;
+import org.virtualbox_5_0.IProgress;
+import org.virtualbox_5_0.ISession;
+import org.virtualbox_5_0.ISharedFolder;
+import org.virtualbox_5_0.IStorageController;
+import org.virtualbox_5_0.IVRDEServer;
+import org.virtualbox_5_0.IVirtualBox;
+import org.virtualbox_5_0.LockType;
+import org.virtualbox_5_0.MachineState;
+import org.virtualbox_5_0.NetworkAdapterPromiscModePolicy;
+import org.virtualbox_5_0.NetworkAdapterType;
+import org.virtualbox_5_0.NetworkAttachmentType;
+import org.virtualbox_5_0.PointingHIDType;
+import org.virtualbox_5_0.SessionState;
+import org.virtualbox_5_0.StorageBus;
+import org.virtualbox_5_0.StorageControllerType;
+import org.virtualbox_5_0.USBControllerType;
+import org.virtualbox_5_0.VirtualBoxManager;
+
+import rwb.java.divers.Log;
+
+public class MachineBO {
+
+	/**
+	 * Attributs
+	 */
+	private static final String SHAREDFOLDERS = "sharedFolders";
+	private static final String TYPEBUS = "typeBus";
+	private static final String FLOPPY = "floppy";
+	private static final String ENABLED = "enabled";
+	private static final String CONNECTEDTO = "connectedTo";
+	private static final String ALLOWMUTLICONNECTION = "allowMultiConnection";
+	private static final String AUTHTIMEOUT = "authTimeout";
+	private static final String AUTHLIBRARY = "authLibrary";
+	private static final String AUTHTYPE = "authtype";
+	private static final String REUSE = "reuseSingleConnection";
+	private static final String WRITABLE = "writable";
+	private static final String AUTOMOUNT = "automount";
+	
+	private IMachine machine;	
+	private IMachine machineMutable;
+	private VirtualBoxManager vbm;
+	private IVirtualBox vbox;
+	private ISession session;
+	private String name;
+	private String osType;
+	private SnapshotBO snapshotBO;
+	private Map<String, Object> infosMachine = new HashMap<>();
+	private HashMap<String, Object> mapSharedFolders;
+	
+	/**
+	 * 
+	 */
+	public MachineBO() {
+		// Constructeur utilisÃ© lors des tests unitaires /!\ ne pas utiliser
+		// dans du code pur
+	}
+
+	/**
+	 * Constructeur 1 Pour sert Ã  crÃ©er un objet MachineBO avec une machine dÃ©jÃ 
+	 * existante
+	 * @param vbm1
+	 * @param name
+	 */
+	public MachineBO(VirtualBoxManager vbm1, String name) {
+		this.vbm = vbm1;
+		this.vbox = vbm1.getVBox();
+		this.machine = this.vbox.findMachine(name);
+		try {
+			if (this.machine.getState() != MachineState.Running && this.machine.getState() != MachineState.Paused) {
+				this.session = vbm1.getSessionObject();
+			} else {
+				this.session = this.vbm.openMachineSession(this.machine);
+			}
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			this.session = vbm1.getSessionObject();
+			 
+		}
+		this.setName(name);
+		this.setOsType(this.machine.getOSTypeId());
+		this.initSharedFolder();
+		this.createInfosMachine();
+		this.setSnapshotBO(new SnapshotBO(this));
+	}
+
+	/**
+	 * 
+	 * @param vbm1
+	 * @param settings
+	 * @param name
+	 */
+	public MachineBO(VirtualBoxManager vbm1, Map<String, Object> settings, String name) {
+		try{
+			this.vbm = vbm1;
+			this.vbox = vbm1.getVBox();
+			this.session = vbm1.getSessionObject();
+			this.setName(name);
+			this.createMachine(settings);
+			this.initSharedFolder();
+			this.setOsType((String) settings.get("general basic OS"));
+			this.setSnapshotBO(new SnapshotBO(this));
+		}catch(Exception e){
+			Log.warning(e.getMessage());
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public VirtualBoxManager getVbm() {
+		return vbm;
+	}
+
+	/**
+	 * 
+	 * @param vbm
+	 */
+	public void setVbm(VirtualBoxManager vbm) {
+		this.vbm = vbm;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public IVirtualBox getVbox() {
+		return vbox;
+	}
+
+	/**
+	 * 
+	 * @param vbox
+	 */
+	public void setVbox(IVirtualBox vbox) {
+		this.vbox = vbox;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public ISession getSession() {
+		return session;
+	}
+
+	/**
+	 * 
+	 * @param session
+	 */
+	public void setSession(ISession session) {
+		this.session = session;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public IMachine getMachine() {
+		return this.machine;
+	}
+
+	/**
+	 * 
+	 * @param machine
+	 */
+	public void setMachine(IMachine machine) {
+		this.machine = machine;
+	}
+
+	/**
+	 * @return the osType
+	 */
+	public String getOsType() {
+		return osType;
+	}
+
+	/**
+	 * @param osType
+	 *            the osType to set
+	 */
+	public void setOsType(String osType) {
+		this.osType = osType;
+	}
+
+	/**
+	 * Get the name of the MachineBO Implicitly the name of the IMachine
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * set the name of the machineBO
+	 * 
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * 
+	 * @return state of the machine
+	 */
+	public String getState() {
+		return this.machine.getState().toString();
+	}
+	
+	public Map<String,Object> getSharedFolders(){
+		return this.mapSharedFolders;
+	}
+
+	/**
+	 * this method launch a VM
+	 */
+	public void powerUp() {
+		if (this.machine.getState() == MachineState.PoweredOff) {
+		
+			try {
+				if(this.machine.getSessionState() != SessionState.Unlocked){
+					this.session.unlockMachine();
+				}
+				IProgress progress = this.machine.launchVMProcess(this.session, "headless", null);
+				progress.waitForCompletion(-1);
+				this.session.unlockMachine();
+				this.session = this.vbm.openMachineSession(this.machine);
+			} catch (Exception e) {
+				Log.warning(e.toString());
+			}
+		}
+	}
+
+	/**
+	 * ACPI shutdown this function shutdown the machine by pressing his power
+	 * button
+	 */
+	public void powerDown() {
+		if (this.machine.getState() == MachineState.Running) { 
+			this.session.getConsole().powerButton();
+			this.session = this.vbm.getSessionObject();
+		}
+	}
+
+	/**
+	 * this method shutdown the machine brutally like pressing the powerbutton
+	 * of the machine during 1O secondes
+	 */
+	public void powerDownForced() {
+		if (this.machine.getState() == MachineState.Running) { 
+			try{   
+				IProgress progress = this.session.getConsole().powerDown();
+				progress.waitForCompletion(-1); 
+			}catch(Exception e){
+				Log.warning(e.toString());
+			} 
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void pause() {
+		if (this.machine.getState() == MachineState.Running) {
+			this.session.getConsole().pause();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void unPause() {
+		if (this.machine.getState() == MachineState.Paused) {
+			try {
+				this.session.getConsole().powerUpPaused();
+			} catch (Exception e) {
+				Log.warning(e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * please refers to the schematic on the drive to know the structure of the
+	 * settings HashMap
+	 * 
+	 * @param settings
+	 */
+	public boolean modifMachine(Map<String, Object> settings) {
+		boolean returnValue = false;
+		try {
+			this.machine.lockMachine(this.session, LockType.Write);
+			IMachine mutable = this.session.getMachine();
+			this.machineMutable = mutable;
+		} catch (Exception e) {
+			Log.warning(e.toString());
+		}
+		Iterator<Entry<String, Object>> it = settings.entrySet().iterator();
+		while (it.hasNext()) {
+			returnValue = switchModifMachine(it);
+			it.remove(); // avoids a ConcurrentModificationException
+		}
+		try {
+			this.machineMutable.saveSettings();
+			this.session.unlockMachine();
+			createInfosMachine();
+		} catch (Exception e) {
+			Log.warning(e.toString()); 
+		}
+	return returnValue;
+	}
+	
+	/**
+	 * 
+	 * @param it
+	 * @return
+	 */
+	private boolean switchModifMachine(Iterator<Entry<String, Object>> it){
+		boolean returnValue = false;
+		try {
+			Entry<String, Object> pair = it.next();
+			String[] keySplit = (pair.getKey()).split(" ");
+			switch (keySplit[0]) {
+			case "general":
+				this.modifSettingGeneral(keySplit, pair);
+				break;
+			case "system":
+				this.modifSettingSystem(keySplit, pair);
+				break;
+			case "display":
+				this.modifSettingDisplay(keySplit, pair);
+				break;
+			case SHAREDFOLDERS:
+				this.modifSettingSharedFolders(pair);
+				break;
+			case "storage":
+				this.modifSettingStorage(pair);
+				break;
+			case "network":
+				this.modifSettingNetwork(pair);
+				break;
+			case "audio":
+				break;
+			default:
+				break;
+			}
+			returnValue = true;
+		} catch (Exception e) {
+			Log.warning(e.getMessage());
+			returnValue = false;
+		}
+		return returnValue;
+	}
+
+	/**
+	 * This method delete a connector
+	 * 
+	 * @param mapConnector
+	 *            Inside the map in parameter you should have the following keys
+	 *            -name (String) -type (String) -typeBus (String) -drive
+	 *            (IMedium) -delete (boolean) -ports (long)
+	 */
+	public void deleteConnector(Map<String, Object> mapConnector) {
+		try {
+			if (mapConnector.get(TYPEBUS) == "USB") {
+				this.machineMutable.removeUSBController((String) mapConnector.get("name"));
+			} else {
+				this.machineMutable.removeStorageController((String) mapConnector.get("name"));
+			}
+		} catch (Exception e) {
+			Log.warning(e.getMessage());
+		}
+	}
+
+	/**
+	 * This method delete a machine with a specific mode
+	 * 
+	 * @param mode
+	 *            -machine: this just delete the file of config of the machine
+	 *            and the machine itself, no media will be deleted, the snapshot
+	 *            are not deleted -machineAndHardDrive: this delete the config
+	 *            files, the machine and the hard drives attached to the
+	 *            machine, the snapshot are deleted -machineAndHardDriveAndISO:
+	 *            this delete the config file, the machine, the hard drives and
+	 *            also the ISO attached to the machine, the snapshots are
+	 *            deleted
+	 */
+	public void deleteMachine(String mode) {
+		
+		if (mode == "machineAndHardDriveAndISO") {
+			List<IMedium> listeHardDrivesAndDVD = this.machine.unregister(org.virtualbox_5_0.CleanupMode.Full);
+			this.machine.deleteConfig(listeHardDrivesAndDVD);
+		} else if (mode == "machineAndHardDrive") {
+			List<IMedium> listeHardDrives = this.machine
+					.unregister(org.virtualbox_5_0.CleanupMode.DetachAllReturnHardDisksOnly);
+			this.machine.deleteConfig(listeHardDrives);
+		} else if (mode == "machine") {
+			this.machine.unregister(org.virtualbox_5_0.CleanupMode.DetachAllReturnNone);
+		}
+	}
+
+	/**
+	 * Please refer to the drive doc to know the structure of the output HashMap
+	 * 
+	 * @return
+	 */
+	public Map<String, Object> getInfos() {
+		return this.infosMachine;
+	}
+
+	/**
+	 * Use this function to create a machine
+	 * 
+	 * @param settings
+	 *            Please refers to the parameters possibles in the HashMap to
+	 *            create a fully functional machine These parameters could be
+	 *            fine in the Javadoc of modifMachine()
+	 */
+	private void createMachine(Map<String, Object> settings) {
+		try {
+			this.machine = this.vbox.createMachine(null, (String) settings.get("general basic Name"), null,
+					(String) settings.get("general basic OS"), null);
+			this.vbox.registerMachine(this.machine);
+
+		} catch (Exception e) {
+			Log.warning(e.getMessage());
+			 
+		} finally {
+			this.modifMachine(settings);
+		}
+	}
+
+	public void exportToOVF(String format, String machinePath, boolean ova) {
+
+		IAppliance appliance = vbox.createAppliance();
+	
+		this.machine.exportTo(appliance, machinePath);
+		
+		List<ExportOptions> manifeste = new ArrayList<>();
+		manifeste.add(ExportOptions.CreateManifest);
+		manifeste.add(ExportOptions.StripAllMACs);
+		
+		if (!ova) {
+			IProgress prog = appliance.write(format, manifeste, machinePath+"/"+this.machine.getName()+".ovf");
+			prog.waitForCompletion(-1);	
+		} else {
+			IProgress prog = appliance.write(format, manifeste, machinePath+"/"+this.machine.getName()+".ova");
+			prog.waitForCompletion(-1);	
+		}
+	}
+
+	/**
+	 * Use this function to create a connector
+	 * 
+	 * @param mapConnector
+	 *            to use this function the Map in parameter should contain
+	 *            -typeBus (String)
+	 */
+	private void createConnector(HashMap<String, Object> mapConnector) {
+		try {
+			switch ((String) mapConnector.get(TYPEBUS)) {
+			case "IDE":
+				this.machineMutable.addStorageController("IDE", StorageBus.IDE);
+
+				break;
+			case "SATA":
+				this.machineMutable.addStorageController("SATA", StorageBus.SATA);
+				break;
+			case "SCSI":
+				this.machineMutable.addStorageController("SCSI", StorageBus.SCSI);
+				break;
+			case "SAS":
+				this.machineMutable.addStorageController("SAS", StorageBus.SAS);
+				break;
+			case FLOPPY:
+				this.machineMutable.addStorageController(FLOPPY, StorageBus.Floppy);
+				break;
+			case "USB":
+				this.machineMutable.addUSBController("USB", USBControllerType.OHCI);
+				break;
+			default:
+				this.machineMutable.addStorageController("Null", StorageBus.Null);
+				break;
+			}
+		} catch (Exception e) {
+			Log.warning(e.getMessage());
+		}
+	}
+
+	/**
+	 * Function used to change the type of a storageBusController
+	 * 
+	 * @param type
+	 * @param name
+	 */
+	private void changeTypeStorageConnector(String type, String name) {
+		IStorageController controller = this.machineMutable.getStorageControllerByName(name);
+		String typeBus = controller.getBus().toString();
+		switch (type) {
+		case "LsiLogicSAS":
+			this.changeTypeSAS(type,typeBus,controller);
+			break;
+		case "BusLogic":
+		case "LsiLogic":
+			this.changeTypeSCSI(type,typeBus,controller);
+			break;
+		case "PIIX3": 
+		case "PIIX4": 
+		case "ICH6":
+			this.changeTypeIDE(type,typeBus,controller);
+			break;
+		case "AHCI":
+			this.changeTypeSATA(type,typeBus,controller);
+			break;
+		case "I82078":
+			this.changeTypeFloppy(type,typeBus,controller);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @param typeBus
+	 * @param controller
+	 */
+	private void changeTypeSAS(String type,String typeBus,IStorageController controller){
+		if (typeBus == "SAS") {
+			controller.setControllerType(StorageControllerType.fromValue(type));
+		}
+	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @param typeBus
+	 * @param controller
+	 */
+	private void changeTypeSCSI(String type,String typeBus,IStorageController controller){
+		if (typeBus == "SCSI") {
+			controller.setControllerType(StorageControllerType.fromValue(type));
+		}
+	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @param typeBus
+	 * @param controller
+	 */
+	private void changeTypeIDE(String type,String typeBus,IStorageController controller){
+		if (typeBus == "IDE") {
+			controller.setControllerType(StorageControllerType.fromValue(type));
+		}
+	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @param typeBus
+	 * @param controller
+	 */
+	private void changeTypeSATA(String type,String typeBus,IStorageController controller){
+		if (typeBus == "SATA") {
+			controller.setControllerType(StorageControllerType.fromValue(type));
+		}
+	}
+	
+	/**
+	 * 
+	 * @param type
+	 * @param typeBus
+	 * @param controller
+	 */
+	private void changeTypeFloppy(String type,String typeBus,IStorageController controller){
+		if (typeBus == FLOPPY) {
+			controller.setControllerType(StorageControllerType.fromValue(type));
+		}
+	}
+
+	/**
+	 * Function used to modify a connector
+	 * 
+	 * @param mapConnector
+	 *            Inside the map in parameter you should have the following keys
+	 *            -name (String) -type (String) -typeBus (String) -drive
+	 *            (IMedium) -delete (boolean) -ports (long)
+	 */
+	private void modifConnector(HashMap<String, Object> mapConnector) {
+		this.changeNbPorts((long) mapConnector.get("ports"), (String) mapConnector.get("name"));
+		if ((String) mapConnector.get(TYPEBUS) == "USB") {
+			this.machineMutable.getUSBControllerByName(name)
+					.setType(USBControllerType.fromValue((String) mapConnector.get("type")));
+		} else {
+			this.changeTypeStorageConnector((String) mapConnector.get("type"), (String) mapConnector.get("name"));
+		}
+		this.changeConnectorName((String) mapConnector.get(TYPEBUS), (String) mapConnector.get("name"));
+	}
+
+	/**
+	 * Change the number of ports for a specific controller For an IDE
+	 * controller, 0 specifies the primary controller and 1 specifies the
+	 * secondary controller. For a SCSI controller, this must range from 0 to
+	 * 15; for a SATA controller, from 0 to 29; for an SAS controller, from 0 to
+	 * 7.
+	 * 
+	 * @param nb
+	 * @param name
+	 */
+	private void changeNbPorts(Long nb, String name) {
+		IStorageController controller = this.machineMutable.getStorageControllerByName(name);
+		if ((controller.getBus().toString() == "SAS") && (nb < 8 && nb > -1)) {
+			controller.setPortCount(nb);
+		} else if ((controller.getBus().toString() == "SCSI") && (nb > -1)) {
+			controller.setPortCount(nb);
+		} else if ((controller.getBus().toString() == "SATA") && (nb < 30 && nb > -1)) {
+			controller.setPortCount(nb);
+		}
+	}
+
+	/**
+	 * Use this function to change the name of a connector
+	 * 
+	 * @param typeBus
+	 * @param nameOut
+	 */
+	private void changeConnectorName(String typeBus, String nameOut) {
+		if (typeBus == "USB") {
+			this.machineMutable.getUSBControllerByName(typeBus).setName(nameOut);
+		} else {
+			List<IStorageController> listcontrollers = this.machineMutable.getStorageControllers();
+			for (IStorageController controller : listcontrollers) {
+				if (controller.getBus().toString() == typeBus) {
+					controller.setName(nameOut);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param medium
+	 * @param typeBus
+	 * @param port
+	 */
+	private void attachMedia(IMedium medium, String typeBus, long port) {
+		List<IStorageController> listeController = this.machineMutable.getStorageControllers();
+		for (IStorageController controller : listeController) {
+			Log.info("[AttachMedia] :" + controller.getName() + "\n" + controller.getBus().toString() + "  = " + typeBus
+					+ "\n" + port + " < " + controller.getPortCount());
+			if ((controller.getBus().toString().equals(typeBus)) && (port < controller.getPortCount())) {
+				Log.info("Controller found");
+				try {
+					this.machineMutable.attachDevice(controller.getName(), (int) port, 0, medium.getDeviceType(),
+							medium);
+					Log.info("AttachDevice ok");
+				} catch (Exception e) {
+					Log.warning(e.getMessage() + "\n" + e.getCause());
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param adapter
+	 */
+	private void modifNetworkAdapter(HashMap<String, Object> adapter) {
+		INetworkAdapter adapterOnMachine = this.machineMutable.getNetworkAdapter((Long) adapter.get("number"));
+		Iterator<Entry<String, Object>> iteratoradapter = adapter.entrySet().iterator();
+		while (iteratoradapter.hasNext()) {
+			Entry<String, Object> entryAdapter = iteratoradapter.next();
+			switch (entryAdapter.getKey()) {
+			case "name":
+				this.changeNetworkAttachedToInterface((String) adapter.get("attachedTo"),(String)entryAdapter.getValue(),adapterOnMachine);
+				break;
+			case "attachedTo":
+				adapterOnMachine.setAttachmentType(NetworkAttachmentType.fromValue((String) entryAdapter.getValue()));
+				break;
+			case "adapterType":
+				adapterOnMachine.setAdapterType(NetworkAdapterType.fromValue((String) entryAdapter.getValue()));
+				break;
+			case "promiscuousMode":
+				adapterOnMachine.setPromiscModePolicy(
+						NetworkAdapterPromiscModePolicy.fromValue((String) entryAdapter.getValue()));
+				break;
+			case "MAC":
+				adapterOnMachine.setMACAddress((String) entryAdapter.getValue());
+				break;
+			case "cableConnected":
+				adapterOnMachine.setCableConnected(Boolean.valueOf((String) entryAdapter.getValue()));
+				break;
+			case "portsForwarding":
+				// Some research on the subject please!!
+				break;
+			case ENABLED:
+				adapterOnMachine.setEnabled(Boolean.valueOf((String) entryAdapter.getValue()));
+				break;
+			default:
+				break;
+			}
+			iteratoradapter.remove();
+		}
+	}
+		
+	/**
+	 * 
+	 * @param attachment
+	 * @param name
+	 * @param adapterOnMachine
+	 */
+	public void changeNetworkAttachedToInterface(String attachment , String name,INetworkAdapter adapterOnMachine){
+		if (attachment == "NATNetwork") {
+			adapterOnMachine.setNATNetwork(name);
+		}
+		if (attachment == "HostOnly") {
+			adapterOnMachine.setHostOnlyInterface(name);
+		}
+		if (attachment == "Internal") {
+			adapterOnMachine.setInternalNetwork(name);
+		}
+		if (attachment == "Bridged") {
+			adapterOnMachine.setBridgedInterface(name);
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public byte[] getPreview() {
+		byte[] arry;
+		try {
+			IConsole console = this.session.getConsole();
+			IDisplay display = console.getDisplay();
+			this.machine.getMonitorCount();
+			arry = display.takeScreenShotToArray((long) this.machine.getMonitorCount() - 1, (long) 640, (long) 480,
+					BitmapFormat.PNG);
+		} catch (Exception e) {
+			Log.warning(e.getMessage());
+			arry = null;
+		}
+		return arry;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public SessionState getSessionState() {
+		return machine.getSessionState();
+	}
+
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifSettingDisplay(String[] keySplit, Map.Entry<String, Object> pair) {
+		switch (keySplit[1]) {
+		case "generalDisplay":
+			this.modifSettingDisplayGeneralDisplay(keySplit, pair);
+			break;
+		case "remoteServer":
+			this.modifSettingDisplayRemoteDisplay(keySplit, pair);
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifSettingGeneral(String[] keySplit, Map.Entry<String, Object> pair) {
+		switch (keySplit[1]) {
+		case "advanced":
+			this.modifSettingGeneralAdvanced(keySplit[2],pair);
+			break;
+		case "basic":
+			this.modifSettingGeneralBasic(keySplit[2],pair);
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * 
+	 * @param key
+	 * @param pair
+	 */
+	private void modifSettingGeneralAdvanced(String key, Entry<String, Object> pair) {
+		switch (key) {
+		case "shareDragDrop":
+			if (pair.getValue() != null)
+				this.machineMutable.setDnDMode(DnDMode.fromValue(pair.getValue().toString()));
+			break;
+		case "snapshotFolder":
+			if (pair.getValue() != null)
+				this.machineMutable.setSnapshotFolder(pair.getValue().toString());
+			break;
+		case "shareClipboard":
+			if (pair.getValue() != null)
+				this.machineMutable.setClipboardMode(ClipboardMode.fromValue(pair.getValue().toString()));
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @param pair
+	 */
+	private void modifSettingGeneralBasic(String key, Entry<String, Object> pair){
+		switch (key) {
+		case "OS":
+			if (pair.getValue() != null)
+				this.machineMutable.setOSTypeId(pair.getValue().toString());
+			break;
+		case "Name":
+			if (pair.getValue() != null)
+				this.machineMutable.setName(pair.getValue().toString());
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifSettingSystem(String[] keySplit, Map.Entry<String, Object> pair) {
+		if (pair.getValue()!= null){
+			switch (keySplit[1]) {
+			case "acceleration":
+				break;
+			case "motherBoard":
+				this.modifSettingSystemMotherboard(keySplit,pair);
+				break;
+			case "processor":
+				this.modifSettingSystemProcessor(keySplit,pair);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifSettingSystemProcessor(String[] keySplit, Entry<String, Object> pair) {
+		switch (keySplit[2]) {
+		case "allocatedRessources":
+			this.machineMutable.setCPUExecutionCap(Long.valueOf(pair.getValue().toString()));
+			break;
+		case "nbCPU":
+			this.machineMutable.setCPUCount(Long.valueOf(pair.getValue().toString()));
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifSettingSystemMotherboard(String[] keySplit,Map.Entry<String, Object> pair){
+		switch (keySplit[2]) {
+		case "activateIOAPIC":
+			this.machineMutable.getBIOSSettings().setIOAPICEnabled(Boolean.valueOf(pair.getValue().toString()));
+			break;
+		case "pointerSystem":
+			this.machineMutable.setPointingHIDType(PointingHIDType.fromValue(pair.getValue().toString()));
+			break;
+		case "chipset":
+			this.machineMutable.setChipsetType(ChipsetType.fromValue(pair.getValue().toString()));
+			break;
+		case "internalClockUTC":
+			this.machineMutable.setRTCUseUTC(Boolean.valueOf(pair.getValue().toString()));
+			break;
+		case "RAM":
+			this.machineMutable.setMemorySize(Long.valueOf(pair.getValue().toString()));
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifSettingDisplayGeneralDisplay(String[] keySplit, Map.Entry<String, Object> pair) {
+		switch (keySplit[2]) {
+		case "VRAM":
+			if (pair.getValue() != null)
+				this.machineMutable.setVRAMSize(Long.valueOf(pair.getValue().toString()));
+			break;
+		case "monitorCount":
+			if (pair.getValue() != null)
+				this.machineMutable.setMonitorCount(Long.valueOf(pair.getValue().toString()));
+			break;
+		case "3DAcceleration":
+			if (pair.getValue() != null)
+				this.machineMutable.setAccelerate3DEnabled(Boolean.valueOf(pair.getValue().toString()));
+			break;
+		case "2DAcceleration":
+			if (pair.getValue() != null)
+				this.machineMutable.setAccelerate2DVideoEnabled(Boolean.valueOf(pair.getValue().toString()));
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifSettingDisplayRemoteDisplay(String[] keySplit,Map.Entry<String,Object> pair){
+		if( this.condition1(keySplit[2])|| this.condition2(keySplit[2])|| this.condition3(keySplit[2])){
+			this.modifRemoteDisplay(keySplit[2],pair);
+		}else{
+			this.modifVRDESevrer(keySplit[2],pair);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private boolean condition1(String input){
+		return input == ALLOWMUTLICONNECTION || input == AUTHLIBRARY;
+	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private boolean condition2(String input){
+		return input == AUTHTIMEOUT || input == AUTHTYPE;
+	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private boolean condition3(String input){
+		return input == ENABLED || input == REUSE;
+	}
+	
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifRemoteDisplay(String keySplit,Map.Entry<String,Object> pair){
+		if (pair.getValue() != null){
+			switch (keySplit) {
+			case ALLOWMUTLICONNECTION:
+				this.machineMutable.getVRDEServer()
+					.setAllowMultiConnection(Boolean.valueOf(pair.getValue().toString()));
+				break;
+			case AUTHLIBRARY:
+				this.machineMutable.getVRDEServer().setAuthLibrary(pair.getValue().toString());
+				break;
+			case AUTHTIMEOUT:
+				this.machineMutable.getVRDEServer().setAuthTimeout(Long.valueOf(pair.getValue().toString()));
+				break;
+			case AUTHTYPE:
+				this.machineMutable.getVRDEServer()
+					.setAuthType(AuthType.fromValue(pair.getValue().toString()));
+				break;
+			case ENABLED:
+				this.machineMutable.getVRDEServer().setEnabled(Boolean.valueOf(pair.getValue().toString()));
+				break;
+			case REUSE:
+				this.machineMutable.getVRDEServer()
+					.setReuseSingleConnection(Boolean.valueOf(pair.getValue().toString()));
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param keySplit
+	 * @param pair
+	 */
+	private void modifVRDESevrer(String keySplit,Map.Entry<String,Object> pair){
+		this.machineMutable.getVRDEServer().setVRDEProperty(keySplit, pair.getValue().toString());
+	}
+	
+	/**
+	 * 
+	 * @param pair
+	 */
+	@SuppressWarnings("unchecked")
+	private void modifSettingSharedFolders(Map.Entry<String, Object> pair) {
+		try{
+			if (pair.getValue() != null) {
+				HashMap<String, Object> sharedFolders = (HashMap<String, Object>) pair.getValue();
+				for(Map.Entry<String,Object> folder1:sharedFolders.entrySet()){
+					this.changeSettingSharedFoldersDetails(folder1);
+				}
+			}
+			this.initSharedFolder();
+		}catch(Exception e){
+			Log.warning(e.toString());
+		}
+	}
+
+	/**
+	 * 
+	 * @param folder1
+	 */
+	private void changeSettingSharedFoldersDetails(Entry<String, Object> folder1) {
+		@SuppressWarnings("unchecked")
+		HashMap<String,Object> folder = (HashMap<String, Object>) folder1.getValue();
+		if ((boolean) folder.get("delete")) {
+			this.machineMutable.removeSharedFolder((String) folder.get("name"));
+		} else {
+			this.machineMutable.createSharedFolder((String) folder.get("name"),
+					(String) folder.get("path"),(boolean) folder.get(WRITABLE),
+					(boolean ) folder.get(AUTOMOUNT));
+		}
+	}
+
+	/**
+	 * 
+	 * @param pair
+	 */
+	private void modifSettingStorage(Map.Entry<String, Object> pair) {
+		Log.info("In storage");
+		@SuppressWarnings("unchecked")
+		HashMap<String, Object> connectorsAndDrives = (HashMap<String, Object>) pair.getValue();
+		// Connectors
+		if (connectorsAndDrives.get("connectors") != null) {
+			@SuppressWarnings("unchecked")
+			HashMap<String, Object> connectors = (HashMap<String, Object>) connectorsAndDrives.get("connectors");
+			Iterator<Entry<String, Object>> iteratorConnector = connectors.entrySet().iterator();
+			while (iteratorConnector.hasNext()) {
+				Entry<String, Object> entryConnector = iteratorConnector.next();
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> mapConnector = (HashMap<String, Object>) entryConnector.getValue();
+				// Case where the connector is already created
+				Log.info(mapConnector.toString());
+				this.operationOnController(mapConnector);
+				iteratorConnector.remove();
+			}
+		}
+		// Drives
+		if (connectorsAndDrives.get("drives") != null) {
+			Log.info("Drives not null");
+			@SuppressWarnings("unchecked")
+			HashMap<String, Object> drives = (HashMap<String, Object>) connectorsAndDrives.get("drives");
+			Iterator<Entry<String, Object>> iteratorDrive = drives.entrySet().iterator();
+			while (iteratorDrive.hasNext()) {
+				Entry<String, Object> entryDrive = iteratorDrive.next();
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> drive = (HashMap<String, Object>) entryDrive.getValue();
+				Log.info("Drive : " + drive.toString());
+				this.attachMedia((IMedium) drive.get("medium"), drive.get(TYPEBUS).toString(),
+						Long.valueOf(drive.get("port").toString()));
+
+				iteratorDrive.remove();
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param pair
+	 */
+	@SuppressWarnings("unchecked") 
+	private void modifSettingNetwork(Map.Entry<String, Object> pair) {	
+		HashMap<String, Object> adaptersNetwork = (HashMap<String, Object>) pair.getValue();
+		Iterator<Entry<String, Object>> iteratorAdapter = adaptersNetwork.entrySet().iterator();
+		while (iteratorAdapter.hasNext()) { 
+			Entry<String, Object> entryAdapter = iteratorAdapter.next();
+			HashMap<String, Object> adapter = (HashMap<String, Object>) entryAdapter.getValue();
+			this.modifNetworkAdapter(adapter);
+			iteratorAdapter.remove();
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public SnapshotBO getSnapshotBO() {
+		return snapshotBO;
+	}
+
+	/**
+	 * 
+	 * @param snapshotBO
+	 */
+	public void setSnapshotBO(SnapshotBO snapshotBO) {
+		this.snapshotBO = snapshotBO;
+	}
+
+	/**
+	 * 
+	 */
+	public void createInfosMachine() {
+		try {
+			// GENERAL
+			HashMap<String, Object> infos = new HashMap<>();
+			HashMap<String, Object> general = new HashMap<>();
+			HashMap<String, Object> basic = new HashMap<>();
+			basic.put("name", this.machine.getName());
+			basic.put("OS", this.machine.getOSTypeId());
+			general.put("basic", basic);
+			HashMap<String, Object> advanced = new HashMap<>();
+			advanced.put("snapshotFolder", this.machine.getSnapshotFolder());
+			advanced.put("shareClipboard", this.machine.getClipboardMode());
+			advanced.put("shareDragDrop", this.machine.getDnDMode());
+			general.put("advanced", advanced);
+			infos.put("general", general);
+			HashMap<String, Object> system = new HashMap<>();
+			HashMap<String, Object> motherBoard = new HashMap<>();
+			motherBoard.put("RAM", this.machine.getMemorySize());
+			HashMap<String, Object> boot = new HashMap<>();
+			boot.put("1", this.machine.getBootOrder((long) 1));
+			boot.put("2", this.machine.getBootOrder((long) 2));
+			boot.put("3", this.machine.getBootOrder((long) 3));
+			boot.put("4", this.machine.getBootOrder((long) 4));
+			motherBoard.put("BootOrder", boot);
+			motherBoard.put("chipset", this.machine.getChipsetType());
+			motherBoard.put("pointerSystem", this.machine.getPointingHIDType());
+			motherBoard.put("activateIOAPIC", this.machine.getBIOSSettings().getIOAPICEnabled());
+			motherBoard.put("internalClockUTC", this.machine.getRTCUseUTC());
+			system.put("motherBoard", motherBoard);
+			HashMap<String, Object> processor = new HashMap<>();
+			processor.put("nbCPU", this.machine.getCPUCount());
+			processor.put("allocatedRessources", this.machine.getCPUExecutionCap());
+			system.put("processor", processor);
+			HashMap<String, Object> acceleration = new HashMap<>();
+			system.put("acceleration", acceleration);
+			infos.put("system", system);
+			HashMap<String, Object> display = new HashMap<>();
+			HashMap<String, Object> generalDisplay = new HashMap<>();
+			generalDisplay.put("VRAM", this.machine.getVRAMSize());
+			generalDisplay.put("monitorCount", this.machine.getMonitorCount());
+			generalDisplay.put("3DAcceleration", this.machine.getAccelerate3DEnabled());
+			generalDisplay.put("2DAcceleration", this.machine.getAccelerate2DVideoEnabled());
+			display.put("generalDisplay", generalDisplay);
+			HashMap<String, Object> remoteServer = new HashMap<>();
+			IVRDEServer server = this.machine.getVRDEServer();
+			remoteServer.put(ALLOWMUTLICONNECTION, server.getAllowMultiConnection());
+			remoteServer.put(AUTHLIBRARY, server.getAuthLibrary());
+			remoteServer.put(AUTHTIMEOUT, server.getAuthTimeout());
+			remoteServer.put(AUTHTYPE, server.getAuthType());
+			remoteServer.put(ENABLED, server.getEnabled());
+			remoteServer.put(REUSE, server.getReuseSingleConnection());
+			remoteServer.put("VRDEProperties", server.getVRDEProperties());
+			display.put("remoteServer", remoteServer);
+			infos.put("display", display);
+			infos.put("storage", this.initInfosConnectors());
+			HashMap<String, Object> audio = new HashMap<>();
+			infos.put("audio", audio);
+			HashMap<String, Object> network = new HashMap<>();
+			for (long i = 0; i < 4; i++) {
+				INetworkAdapter adapter = this.machine.getNetworkAdapter(i);
+				HashMap<String, Object> mapAdapter = new HashMap<>();
+				mapAdapter.put("adapterName", adapter.getGenericDriver());
+				mapAdapter.put("adapterType", adapter.getAdapterType());
+				mapAdapter.put("attachmentType", adapter.getAttachmentType());
+				mapAdapter.put(CONNECTEDTO, this.getNetworkConnectedTo(adapter));
+				mapAdapter.put("cableConnected", adapter.getCableConnected());
+				mapAdapter.put(ENABLED, adapter.getEnabled().toString());
+				mapAdapter.put("MACAdress", adapter.getMACAddress());
+				mapAdapter.put("promiscuousMode", adapter.getPromiscModePolicy().toString());
+				network.put("adapter" + i, mapAdapter);
+			}
+			infos.put("network", network);
+			if (this.machine.getSharedFolders().isEmpty()) {
+				infos.put(SHAREDFOLDERS, null);
+			} else {
+				HashMap<String, Object> sharedFolders = new HashMap<>();
+				int i = 0;
+				for (ISharedFolder shared : this.machine.getSharedFolders()) {
+					HashMap<String, Object> folder = new HashMap<>();
+					folder.put("name", shared.getName());
+					folder.put("path", shared.getHostPath());
+					folder.put(AUTOMOUNT, shared.getAutoMount());
+					folder.put(WRITABLE, shared.getWritable());
+					sharedFolders.put(String.valueOf(i), folder);
+					i++;
+				}
+				sharedFolders.put("NbSharedFolders", i);
+				infos.put(SHAREDFOLDERS, sharedFolders);
+			}
+			this.infosMachine = infos;
+
+		} catch (Exception e) {
+			Log.warning(e.toString());
+		}
+	}
+
+	/**
+	 * 
+	 * @param adapter
+	 * @return
+	 */
+	private Object getNetworkConnectedTo(INetworkAdapter adapter) {
+		String nameNetworkConnectedTo;
+		switch(adapter.getAttachmentType().toString()){
+		case "NAT":
+			nameNetworkConnectedTo = "none";
+			break;
+		case "NATNetwork":
+			nameNetworkConnectedTo = adapter.getNATNetwork();
+			break;
+		case "Bridged":
+			nameNetworkConnectedTo = adapter.getBridgedInterface();
+			break;
+		case "Internal":
+			nameNetworkConnectedTo = adapter.getInternalNetwork();
+			break;
+		case "HostOnly":
+			nameNetworkConnectedTo = adapter.getHostOnlyInterface();
+			break;
+		case "Generic":
+			nameNetworkConnectedTo = adapter.getGenericDriver();
+			break;
+		default:
+			nameNetworkConnectedTo = "none";
+			break;
+		}
+		return nameNetworkConnectedTo;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private Map<String, Object> initInfosConnectors() {
+		HashMap<String, Object> connectors = new HashMap<>();
+		List<IStorageController> listeController = this.machine.getStorageControllers();
+		for (IStorageController controller : listeController) {
+			HashMap<String, Object> mapController = new HashMap<>();
+			mapController.put("typeBusController", controller.getBus().toString());
+			mapController.put("nameController", controller.getName());
+			mapController.put("typeController", controller.getControllerType().toString());
+			mapController.put("nbPortsController", controller.getPortCount());
+			List<IMediumAttachment> attachments = this.machine.getMediumAttachmentsOfController(controller.getName());
+			for (IMediumAttachment attachment : attachments) {
+				HashMap<String, Object> attachement = new HashMap<>();
+				if (attachment.getMedium() != null) {
+					attachement.put("connectedToPort", attachment.getPort().toString());
+					attachement.put("nameDrive", attachment.getMedium().getName());
+					attachement.put("formatDrive", attachment.getMedium().getFormat());
+					attachement.put("deviceTypeDrive", attachment.getMedium().getDeviceType().toString());
+					attachement.put("pathDrive", attachment.getMedium().getLocation());
+					attachement.put("mediumFormatDrive", attachment.getMedium().getMediumFormat().toString());
+					attachement.put("logicalSizeDrive", attachment.getMedium().getLogicalSize());
+					attachement.put("mediumSizeDrive", attachment.getMedium().getSize().toString());
+					mapController.put("attachementToPort" + attachment.getPort().toString(), attachement);
+				}
+			}
+			mapController.put("driveAttachement", this.machine.getMediumAttachmentsOfController(controller.getName()));
+			connectors.put(controller.getBus().toString(), mapController);
+		}
+		return connectors;
+	}
+
+	/**
+	 * 
+	 * @param mapConnector
+	 */
+	private void operationOnController(Map<String, Object> mapConnector) {
+		if (mapConnector.size() > 1) {
+			if (Boolean.valueOf((String) mapConnector.get("delete"))) {
+				this.deleteConnector(mapConnector);
+			} else { // Case the object need a modification
+				this.modifConnector((HashMap<String, Object>) mapConnector);
+			}
+		} else { // Case where the connector has to be created
+			Log.info("Create connector");
+			this.createConnector((HashMap<String, Object>) mapConnector);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void initSharedFolder(){
+		List<ISharedFolder> shared = this.machine.getSharedFolders();
+		if (shared != null){
+			this.mapSharedFolders = new HashMap<>();
+			int i = 0;
+			for (ISharedFolder f : shared) {
+				HashMap<String, Object> folder = new HashMap<>();
+				folder.put("name", f.getName());
+				folder.put("path", f.getHostPath());
+				folder.put(AUTOMOUNT, f.getAutoMount().toString());
+				folder.put(WRITABLE, f.getWritable().toString());
+				this.mapSharedFolders.put(String.valueOf(i), folder);
+				i++;
+			}
+			this.mapSharedFolders.put("nbSharedFolder", i);
+		}
+	}
+}

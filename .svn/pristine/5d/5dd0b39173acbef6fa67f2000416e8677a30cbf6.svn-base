@@ -1,0 +1,214 @@
+
+(function($) {
+
+  $(document).ready(function() {
+	  /***************************
+	   *        Variable 
+	   **************************/
+	  var inTransaction 	= false;
+	  var mapSrv;
+	 
+	  /***************************
+	   *        Function 
+	   **************************/
+
+	  
+		function createMachine(){
+			inTransaction = true;
+			$('.loader-createMachine').show();
+			$.ajax({
+				url: 'CreateMachine',
+				type: 'POST', 
+				dataType: 'JSON',
+				data: $('#create-vm-form').serialize(),
+				success: function (data) { 
+					inTransaction = false;
+					$('.loader-createMachine').hide();
+					jQuery('#createMachine-modal').modal('hide');
+					jQuery('#choice-newMachine-modal').modal('hide');
+					
+					notify('success','New machine created !');
+					window.location.replace('vm.jsp?srvId='+data.data.srvId+'&idVm='+data.data.vmId);
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					inTransaction = false; 
+					notify('danger','Error : '+ jqXHR.status+'['+errorThrown+'] Machine not create !');
+					$('.loader-createMachine').hide();
+				}
+			}); 
+			
+		}
+	  function getInfoSidebar(){
+		  $('.loader-sidebar').show();
+		  $('#ul-sidebar-content').empty();
+		  $.ajax({
+		        url: 'SidebarContent',
+		        type: 'POST', 
+		        dataType: 'json',
+		        data: $('.js-value-form').serialize(),
+		        success: function (data) {  
+		        	mapSrv = data;
+		        	//add content to sidebar 
+		        	
+		        	
+		        	$.each(data,function(key,val){
+		        		
+		        		if(val.state == "unavailable"){
+		        			var srvContent = "<li class=\"server-sidebar\"> <a href=\"#\">   <span class=\"fa-stack fa-lg\"> <i class=\"fa fa-server fa-stack-1x\"></i>"+
+		        								"<i class=\"fa fa-ban fa-stack-2x text-danger\"></i> </span> <span id=\"server-sidebar-name\">"+val.name+"</span></a></li>";
+			        		$('#ul-sidebar-content').append(srvContent);
+			        		$.each(val.vms,function(key1,val2){
+			        			var vmContent = "<li class=\"vm-sidebar\">"+
+			        							"<div class=\"inactive-overlay\" ></div>"+
+								        			"<div class=\"inactive\"id=\""+val2.name+"\">"+ 
+														"<img src=\"assets/img/icon-os-vb/"+val2.ico+"\" class=\"vm-sidebar-ico\" onerror=\"this.src='assets/img/icon-os/unknown.svg';\"/>"+
+														"<span class=\"vm-sidebar-name\">"+val2.name.substring(0,14) +" </span> <br> "+
+														"<span class=\"vm-sidebar-type\"><i class=\"fa  "+val2.os+" aria-hidden=\"true\"></i>&nbsp;"+val2.os+"</span>"+							
+													"</div>"+
+												"</li>";
+			        			
+			        			
+			        			$('#ul-sidebar-content').append(vmContent);
+			        		});
+		        		}else{
+		        			var srvContent = "<li class=\"server-sidebar\"> <a href=\"server.jsp?srvId="+val.id+"\"> <i class=\"fa fa-server fa-2x\" aria-hidden=\"true\"></i> <span id=\"server-sidebar-name\">"+val.name+"</span></a></li>";
+			        		$('#ul-sidebar-content').append(srvContent);
+			        		$.each(val.vms,function(key1,val2){
+			        			var vmContent = "<li class=\"vm-sidebar\">"+
+								        			"<a href=\"vm.jsp?srvId="+val.id+"&idVm="+val2.name+"\" id=\""+val2.name+"\">"+
+														"<img src=\"assets/img/icon-os-vb/"+val2.ico+"\" class=\"vm-sidebar-ico\" onerror=\"this.src='assets/img/icon-os/unknown.svg';\"/>"+
+														"<span class=\"vm-sidebar-name\">"+val2.name.substring(0,14) +" </span> <br> "+
+														"<span class=\"vm-sidebar-type\"><i class=\"fa  "+val2.os+" aria-hidden=\"true\"></i>&nbsp;"+val2.state+"</span>"+							
+													"</a>"+
+												"</li>";
+			        			
+			        			
+			        			$('#ul-sidebar-content').append(vmContent);
+			        		});
+		        		} 
+		        		
+		        		
+		        		
+		        	});
+		        	$('.loader-sidebar').hide();
+		        	
+		        	
+		        	
+		        	
+		        },
+		      	error: function (data) {
+	        		var srvContent = "<li class=\"server-sidebar\"> No machine found </li>";
+		      		$('#ul-sidebar-content').append(srvContent);
+		      		$('.loader-sidebar').hide();
+		      		//notify('danger','List of VM not updated !');
+		      	}
+		      }); 
+		  
+	  }
+	  
+	  
+	  function changeSrvCreateMachine(){
+		  var selectedSrv = $("#vm-server").find(':selected').val();
+		  var cpuMax;
+		  var ramMax;
+		  $.each(mapSrv,function(key,val){
+			  if(val.id == selectedSrv ){
+				  cpuMax = val.cpuMax;
+				  ramMax = val.ramMax;
+			  }
+			  
+		  });
+		  
+		  $("#vm-ram").data("ionRangeSlider").update({
+			  max: ramMax
+		  });
+		  $("#vm-cpu").data("ionRangeSlider").update({
+			  max: cpuMax 
+		  		
+		  });
+		 
+		  
+		  
+		  
+	  }
+	  
+	  function notify(type, msg){
+		  var ico = '';
+		  
+		  	if(type== 'danger'){
+		  		ico = 'fa fa-times';
+		  	}else if(type == 'success'){
+		  		ico = 'fa fa -check';
+		  	}else if( type== 'warning'){
+		  		ico = 'fa fa-warning';
+		  	}else{
+		  		ico = '';
+		  	}
+		  
+	        jQuery.notify({
+        		icon: ico,
+                message: msg
+            },
+            {
+                element: 'body',
+                type: type,
+                allow_dismiss: true,
+                newest_on_top: true,
+                showProgressbar: false,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                offset: 20,
+                spacing: 10,
+                z_index: 1033,
+                delay: 3000,
+                timer: 1000,
+                animate: {
+                    enter: 'animated fadeIn',
+                    exit: 'animated fadeOutDown'
+                }
+            });
+	  }
+	  
+	  function resizeSidebarContent(){
+		  var winHeight = $(window).height(); 
+		  var headerHeight = $('#sidebar-top').height();
+		  $('#side-sontent-scroll').height(winHeight - headerHeight);
+			  
+	  }
+	  
+	  
+	  /***************************
+	   *        On click event 
+	   **************************/
+	  $(window).resize(function() {
+		  resizeSidebarContent();
+		});
+	  
+	  
+	  $('#btn-refresh-sidbar').click(function(e){
+		  e.preventDefault();
+		  getInfoSidebar();
+	});
+	  $('#btn-create-machine').click(function(e){
+			e.preventDefault();
+			createMachine();
+		});
+    $('#vm-server').change(function(e){
+    	e.preventDefault();
+    	changeSrvCreateMachine();
+    });
+    
+    
+    
+    /***************************
+	  *        Main API 
+	  **************************/
+	  getInfoSidebar();
+	  resizeSidebarContent();
+    
+
+  });
+
+})(jQuery);

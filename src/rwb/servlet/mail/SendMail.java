@@ -1,0 +1,80 @@
+package rwb.servlet.mail;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+
+import rwb.java.divers.Log;
+import rwb.java.mail.GoogleMail;
+
+/**
+ * Servlet implementation class SendMail
+ */
+@WebServlet("/SendMail")
+public class SendMail extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public SendMail() {
+        super();
+    }
+
+	/**
+	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Boolean error = false;
+		String name = (String)request.getParameter("MailName");
+		String surname = (String)request.getParameter("MailSurname");
+		String text = (String)request.getParameter("MailText");
+		String email = (String)request.getParameter("MailEmailToAnswer");
+		GoogleMail mail = new GoogleMail();
+		try{
+			mail.sendMail("dabaze44@gmail.com", "RUSTINE44", "dabaze44@gmail.com", name + surname + text + email);
+
+		}catch(Exception e){
+			error = true;
+			Log.warning(e.toString());
+			 
+		}
+		
+		
+		
+		/**
+		 * Response parse 
+		 */
+		HashMap<String,Object> resp = new HashMap<>();
+		HashMap<String,Object> header = new HashMap<>();
+		if(error){
+			header.put("statut", "503");
+			header.put("msg", "Mail not send! ");
+		}else{
+			header.put("statut", "200");
+			header.put("msg", "Mail send!");
+		}
+		
+	
+		
+		HashMap<String,Object> data = new HashMap<>();
+	
+		resp.put("header", header);
+		resp.put("data", data);
+			
+		
+		Gson gson = new Gson(); 
+		String json = gson.toJson(resp); 
+			
+		
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().write(json);	
+	}
+
+}

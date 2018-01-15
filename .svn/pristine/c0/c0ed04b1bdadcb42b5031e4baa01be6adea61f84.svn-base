@@ -1,0 +1,27 @@
+var classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o =
+[
+    [ "ServeurBO", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a125d9f7b642c91271914c23372ce7457", null ],
+    [ "ServeurBO", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a3e0ca0242e8aed9275f4e479bcb83b77", null ],
+    [ "ServeurBO", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#aa38b426259c9b326bff3b14c59b7a333", null ],
+    [ "getId", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#ac9f13e03a5ef2e53f0cccf357271efbf", null ],
+    [ "getIp", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a4d6ae90d7323ea2eaec909bd67d52a09", null ],
+    [ "getName", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#ad88a27bb5ef075ebea06f5167e88d575", null ],
+    [ "getPassword", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#ab3914e342e2b1404882f6e4bfae9c1a6", null ],
+    [ "getPort", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a70cf4a9d7406a311f2f36ca65432a21a", null ],
+    [ "getState", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#aebc65d61e1f270b8a2e3a147cc624c05", null ],
+    [ "getUser", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#abf6ec1afd595998a88e375d8263f36d9", null ],
+    [ "setId", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#ae108a86fef783892c109cb58085f19ac", null ],
+    [ "setIp", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#ac34d2e105ef3834379d47bcbf3cb9b88", null ],
+    [ "setName", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#aee09fee779511c2c928e1948b52240e7", null ],
+    [ "setPassword", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a6c747b4b9699f260e53223a125452974", null ],
+    [ "setPort", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#ac753dc6528174bfb3092c67e823f7842", null ],
+    [ "setState", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a10b05d03d45b2d0d7ed33d77d010630e", null ],
+    [ "setUser", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a358b2716cc5d9010188357ae310ed8a0", null ],
+    [ "enabled", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a996ec9d84acb3f48ae518e3e0f917697", null ],
+    [ "id", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#add74c1302428035847298fb6fedc6d68", null ],
+    [ "ip", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#abefca3a0dce662d9a400dcc8813746c5", null ],
+    [ "name", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#acc1de003777662d83cfbc0cbfa5da1d1", null ],
+    [ "password", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a6e7a12bfdd3f54640ae51c8fa9d29557", null ],
+    [ "port", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#aad696402f71232a8a794fff33d73e05a", null ],
+    [ "user", "classrwb_1_1java_1_1server_1_1bo_1_1_serveur_b_o.html#a96dbeebb95490a026543fbe35c81a94a", null ]
+];

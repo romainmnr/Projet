@@ -1,0 +1,32 @@
+\hypertarget{classrwb_1_1java_1_1divers_1_1_maths}{}\section{rwb.\+java.\+divers.\+Maths Class Reference}
+\label{classrwb_1_1java_1_1divers_1_1_maths}\index{rwb.\+java.\+divers.\+Maths@{rwb.\+java.\+divers.\+Maths}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1divers_1_1_maths_a824e171a335aa5bff8cba2e6107c764a}\label{classrwb_1_1java_1_1divers_1_1_maths_a824e171a335aa5bff8cba2e6107c764a}} 
+static long {\bfseries get\+R\+A\+M\+Value} (long in)
+\item 
+static long \hyperlink{classrwb_1_1java_1_1divers_1_1_maths_a316403c710272656f4dd5ed5904c7cdf}{get\+H\+D\+D\+Value} (long go)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classrwb_1_1java_1_1divers_1_1_maths_a316403c710272656f4dd5ed5904c7cdf}\label{classrwb_1_1java_1_1divers_1_1_maths_a316403c710272656f4dd5ed5904c7cdf}} 
+\index{rwb\+::java\+::divers\+::\+Maths@{rwb\+::java\+::divers\+::\+Maths}!get\+H\+D\+D\+Value@{get\+H\+D\+D\+Value}}
+\index{get\+H\+D\+D\+Value@{get\+H\+D\+D\+Value}!rwb\+::java\+::divers\+::\+Maths@{rwb\+::java\+::divers\+::\+Maths}}
+\subsubsection{\texorpdfstring{get\+H\+D\+D\+Value()}{getHDDValue()}}
+{\footnotesize\ttfamily static long rwb.\+java.\+divers.\+Maths.\+get\+H\+D\+D\+Value (\begin{DoxyParamCaption}\item[{long}]{go }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em in} & Go \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/rwb/java/divers/Maths.\+java\end{DoxyCompactItemize}

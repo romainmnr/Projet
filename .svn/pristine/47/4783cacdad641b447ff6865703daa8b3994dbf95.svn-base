@@ -1,0 +1,239 @@
+\hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o}{}\section{rwb.\+java.\+vb.\+bo.\+Machine\+BO Class Reference}
+\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o}\index{rwb.\+java.\+vb.\+bo.\+Machine\+BO@{rwb.\+java.\+vb.\+bo.\+Machine\+BO}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a1dde9ea8eabf70f65b9b002019f3fa3c}{Machine\+BO} (Virtual\+Box\+Manager vbm1, String name)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a56fe867d3c8c29114f5273d61c136a24}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a56fe867d3c8c29114f5273d61c136a24}} 
+{\bfseries Machine\+BO} (Virtual\+Box\+Manager vbm1, Hash\+Map$<$ String, Object $>$ settings, String name)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a3db3f9e444a93d6937e259e212d555b4}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a3db3f9e444a93d6937e259e212d555b4}} 
+Virtual\+Box\+Manager {\bfseries get\+Vbm} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ad98f8ff992d71748d5fb152a8da62ee2}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ad98f8ff992d71748d5fb152a8da62ee2}} 
+void {\bfseries set\+Vbm} (Virtual\+Box\+Manager vbm)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_afb8c0a4bc25fcfa0e31eb46e48feb886}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_afb8c0a4bc25fcfa0e31eb46e48feb886}} 
+I\+Virtual\+Box {\bfseries get\+Vbox} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_abf5bea7f3aaa9ce1bb6a4c8126d6e89f}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_abf5bea7f3aaa9ce1bb6a4c8126d6e89f}} 
+void {\bfseries set\+Vbox} (I\+Virtual\+Box vbox)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac3179fee1991533c238290de73370630}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac3179fee1991533c238290de73370630}} 
+I\+Session {\bfseries get\+Session} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a34d99df6c20637cc9beed5e1b031d9c2}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a34d99df6c20637cc9beed5e1b031d9c2}} 
+void {\bfseries set\+Session} (I\+Session session)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a56642943b7b2d9b98b2156f0fc998e01}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a56642943b7b2d9b98b2156f0fc998e01}} 
+I\+Machine {\bfseries get\+Machine} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac8e779b035ba50eaa93e37c11a5dd888}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac8e779b035ba50eaa93e37c11a5dd888}} 
+void {\bfseries set\+Machine} (I\+Machine machine)
+\item 
+String \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5c55bcdd6cdb21795ad8353d128a3414}{get\+Os\+Type} ()
+\item 
+void \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a39116b362fddabb0e3c462e9b360c072}{set\+Os\+Type} (String os\+Type)
+\item 
+String \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5ba948dd8159090de927e2d881ed7e02}{get\+Name} ()
+\item 
+void \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a7d00812a1773e37c772b8af18eb6cbd4}{set\+Name} (String name)
+\item 
+String \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a6643f8f8ff7e46871c10a588c20b9d97}{get\+State} ()
+\item 
+void \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ad3b55069d4fd725d57d8e65fb8a1ec2b}{power\+Up} ()
+\item 
+void \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a3601710d4b53a402e982798b3d047e5c}{power\+Down} ()
+\item 
+void \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac1315707edbda83c59539609f19f3543}{power\+Down\+Forced} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5676e7ba55fe772aabc6c5c89a970838}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5676e7ba55fe772aabc6c5c89a970838}} 
+void {\bfseries pause} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_aded7ec654a7d6e20b37e0001be854f42}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_aded7ec654a7d6e20b37e0001be854f42}} 
+void {\bfseries un\+Pause} ()
+\item 
+void \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_aab7c7968e3898a30eca619de925bfc35}{modif\+Machine} (Hash\+Map$<$ String, Object $>$ settings)
+\item 
+void \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a4c046a49d78f369fb94161c9c78e4689}{delete\+Machine} (String mode)
+\item 
+Hash\+Map$<$ String, Object $>$ \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a8c83a1e2c81b16ffa7350c1cdf0da683}{get\+Infos} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a0cf7d589e4ce92c6e928c90d8a12af88}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a0cf7d589e4ce92c6e928c90d8a12af88}} 
+I\+Virtual\+System\+Description {\bfseries export} (I\+Appliance appliance, String path)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ae47434a54c52a312e09a3666666720a1}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ae47434a54c52a312e09a3666666720a1}} 
+byte \mbox{[}$\,$\mbox{]} {\bfseries get\+Preview} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac88fc478be1aa934405e7a0fdcb8c885}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac88fc478be1aa934405e7a0fdcb8c885}} 
+Session\+State {\bfseries get\+Session\+State} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a58cfa7f5999c1cee0e5ff0a6f989f5bb}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a58cfa7f5999c1cee0e5ff0a6f989f5bb}} 
+void {\bfseries take\+Snap} (String snap\+Name)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ae140f194767e338ccb97ec6ac31d36c4}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ae140f194767e338ccb97ec6ac31d36c4}} 
+void {\bfseries delete\+Current\+Snap} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_acca99046925cdbe173f3ce375b5d9cc2}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_acca99046925cdbe173f3ce375b5d9cc2}} 
+void {\bfseries delete\+Snap\+By\+Id} (String uuid)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a2eaefd83cdf90c34025df281a88fdecb}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a2eaefd83cdf90c34025df281a88fdecb}} 
+void {\bfseries restore\+From\+Snap} (I\+Snapshot snap)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a649e6c76d96bd579b1f165d77573abea}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a649e6c76d96bd579b1f165d77573abea}} 
+I\+Snapshot {\bfseries find\+Snap\+By\+Id} (String uuid)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_acf94c36f756cb6fbea61319585c480a6}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_acf94c36f756cb6fbea61319585c480a6}} 
+I\+Snapshot {\bfseries find\+Snap\+By\+Name} (String name)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ad198df6bc5a49082f82cd37acfafbf63}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ad198df6bc5a49082f82cd37acfafbf63}} 
+List$<$ I\+Snapshot $>$ {\bfseries find\+Snap\+Children} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ae6e7874ff437af618489c10a6f5ccad6}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ae6e7874ff437af618489c10a6f5ccad6}} 
+String {\bfseries get\+Current\+Snap\+Id} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a826b7ac227b976f3b8a272ff9c508efb}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a826b7ac227b976f3b8a272ff9c508efb}} 
+String {\bfseries get\+Current\+Snap\+Name} ()
+\item 
+List$<$ String $>$ \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a77ae02697988c7036e22b126fe2122ec}{get\+Tree\+Snapshots\+Id} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_abc3f35f5b36c9415d614934e763f11e0}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_abc3f35f5b36c9415d614934e763f11e0}} 
+List$<$ String $>$ {\bfseries get\+Tree\+Snapshots\+Name} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a1dde9ea8eabf70f65b9b002019f3fa3c}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a1dde9ea8eabf70f65b9b002019f3fa3c}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!Machine\+BO@{Machine\+BO}}
+\index{Machine\+BO@{Machine\+BO}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{Machine\+B\+O()}{MachineBO()}}
+{\footnotesize\ttfamily rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+Machine\+BO (\begin{DoxyParamCaption}\item[{Virtual\+Box\+Manager}]{vbm1,  }\item[{String}]{name }\end{DoxyParamCaption})}
+
+Constructeur 1 Pour sert à créer un objet \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o}{Machine\+BO} avec une machine déjà existante 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a4c046a49d78f369fb94161c9c78e4689}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a4c046a49d78f369fb94161c9c78e4689}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!delete\+Machine@{delete\+Machine}}
+\index{delete\+Machine@{delete\+Machine}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{delete\+Machine()}{deleteMachine()}}
+{\footnotesize\ttfamily void rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+delete\+Machine (\begin{DoxyParamCaption}\item[{String}]{mode }\end{DoxyParamCaption})}
+
+This method delete a machine with a specific mode
+
+
+\begin{DoxyParams}{Parameters}
+{\em mode} & -\/machine\+: this just delete the file of config of the machine and the machine itself, no media will be deleted, the snapshot are not deleted -\/machine\+And\+Hard\+Drive\+: this delete the config files, the machine and the hard drives attached to the machine, the snapshot are deleted -\/machine\+And\+Hard\+Drive\+And\+I\+SO\+: this delete the config file, the machine, the hard drives and also the I\+SO attached to the machine, the snapshots are deleted \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a8c83a1e2c81b16ffa7350c1cdf0da683}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a8c83a1e2c81b16ffa7350c1cdf0da683}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!get\+Infos@{get\+Infos}}
+\index{get\+Infos@{get\+Infos}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{get\+Infos()}{getInfos()}}
+{\footnotesize\ttfamily Hash\+Map$<$String, Object$>$ rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+get\+Infos (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Please refer to the drive doc to know the structure of the output Hash\+Map
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5ba948dd8159090de927e2d881ed7e02}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5ba948dd8159090de927e2d881ed7e02}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!get\+Name@{get\+Name}}
+\index{get\+Name@{get\+Name}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{get\+Name()}{getName()}}
+{\footnotesize\ttfamily String rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+get\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Get the name of the \hyperlink{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o}{Machine\+BO} Implicitly the name of the I\+Machine
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5c55bcdd6cdb21795ad8353d128a3414}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a5c55bcdd6cdb21795ad8353d128a3414}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!get\+Os\+Type@{get\+Os\+Type}}
+\index{get\+Os\+Type@{get\+Os\+Type}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{get\+Os\+Type()}{getOsType()}}
+{\footnotesize\ttfamily String rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+get\+Os\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+the os\+Type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a6643f8f8ff7e46871c10a588c20b9d97}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a6643f8f8ff7e46871c10a588c20b9d97}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!get\+State@{get\+State}}
+\index{get\+State@{get\+State}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{get\+State()}{getState()}}
+{\footnotesize\ttfamily String rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+get\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+state of the machine 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a77ae02697988c7036e22b126fe2122ec}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a77ae02697988c7036e22b126fe2122ec}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!get\+Tree\+Snapshots\+Id@{get\+Tree\+Snapshots\+Id}}
+\index{get\+Tree\+Snapshots\+Id@{get\+Tree\+Snapshots\+Id}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{get\+Tree\+Snapshots\+Id()}{getTreeSnapshotsId()}}
+{\footnotesize\ttfamily List$<$String$>$ rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+get\+Tree\+Snapshots\+Id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Retourne l\textquotesingle{}id du snap courant suivi de celui de ses enfants dans l\textquotesingle{}ordre croissant de création
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_aab7c7968e3898a30eca619de925bfc35}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_aab7c7968e3898a30eca619de925bfc35}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!modif\+Machine@{modif\+Machine}}
+\index{modif\+Machine@{modif\+Machine}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{modif\+Machine()}{modifMachine()}}
+{\footnotesize\ttfamily void rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+modif\+Machine (\begin{DoxyParamCaption}\item[{Hash\+Map$<$ String, Object $>$}]{settings }\end{DoxyParamCaption})}
+
+please refers to the schematic on the drive to know the structure of the settings Hash\+Map
+
+
+\begin{DoxyParams}{Parameters}
+{\em settings} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a3601710d4b53a402e982798b3d047e5c}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a3601710d4b53a402e982798b3d047e5c}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!power\+Down@{power\+Down}}
+\index{power\+Down@{power\+Down}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{power\+Down()}{powerDown()}}
+{\footnotesize\ttfamily void rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+power\+Down (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+A\+C\+PI shutdown this function shutdown the machine by pressing his power button \mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac1315707edbda83c59539609f19f3543}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ac1315707edbda83c59539609f19f3543}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!power\+Down\+Forced@{power\+Down\+Forced}}
+\index{power\+Down\+Forced@{power\+Down\+Forced}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{power\+Down\+Forced()}{powerDownForced()}}
+{\footnotesize\ttfamily void rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+power\+Down\+Forced (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+this method shutdown the machine brutally like pressing the powerbutton of the machine during 1O secondes \mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ad3b55069d4fd725d57d8e65fb8a1ec2b}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_ad3b55069d4fd725d57d8e65fb8a1ec2b}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!power\+Up@{power\+Up}}
+\index{power\+Up@{power\+Up}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{power\+Up()}{powerUp()}}
+{\footnotesize\ttfamily void rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+power\+Up (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+this method launch a VM \mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a7d00812a1773e37c772b8af18eb6cbd4}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a7d00812a1773e37c772b8af18eb6cbd4}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!set\+Name@{set\+Name}}
+\index{set\+Name@{set\+Name}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{set\+Name()}{setName()}}
+{\footnotesize\ttfamily void rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+set\+Name (\begin{DoxyParamCaption}\item[{String}]{name }\end{DoxyParamCaption})}
+
+set the name of the machine\+BO
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a39116b362fddabb0e3c462e9b360c072}\label{classrwb_1_1java_1_1vb_1_1bo_1_1_machine_b_o_a39116b362fddabb0e3c462e9b360c072}} 
+\index{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}!set\+Os\+Type@{set\+Os\+Type}}
+\index{set\+Os\+Type@{set\+Os\+Type}!rwb\+::java\+::vb\+::bo\+::\+Machine\+BO@{rwb\+::java\+::vb\+::bo\+::\+Machine\+BO}}
+\subsubsection{\texorpdfstring{set\+Os\+Type()}{setOsType()}}
+{\footnotesize\ttfamily void rwb.\+java.\+vb.\+bo.\+Machine\+B\+O.\+set\+Os\+Type (\begin{DoxyParamCaption}\item[{String}]{os\+Type }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em os\+Type} & the os\+Type to set \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/rwb/java/vb/bo/Machine\+B\+O.\+java\end{DoxyCompactItemize}

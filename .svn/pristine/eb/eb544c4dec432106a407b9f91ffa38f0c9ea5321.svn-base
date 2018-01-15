@@ -1,0 +1,275 @@
+package rwb.java.vb.bo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.virtualbox_5_0.Holder;
+import org.virtualbox_5_0.IMachine;
+import org.virtualbox_5_0.IProgress;
+import org.virtualbox_5_0.ISession;
+import org.virtualbox_5_0.ISnapshot;
+import org.virtualbox_5_0.LockType;
+import org.virtualbox_5_0.MachineState;
+
+import rwb.java.divers.Log;
+
+public class SnapshotBO {
+	
+	/**
+	 * Attributes
+	 */
+	private IMachine machine;
+	private ISession session;
+	private String currentSnap;
+	
+	/**
+	 * Method for testing the code
+	 */
+	public SnapshotBO(){
+		//Do nothing because of the test
+	}
+	
+	/**
+	 * Constructor for a snapshot Business Object
+	 * @param machineBO
+	 */
+	public SnapshotBO(MachineBO machineBO){
+		this.machine = machineBO.getMachine();
+		this.session = machineBO.getVbm().getSessionObject();
+	}
+	
+	/**
+	 * Get the machine
+	 * @return
+	 */
+	public IMachine getMachine() {
+		return machine;
+	}
+	
+	/**
+	 * Set Machine
+	 * @param machine
+	 */
+	public void setMachine(IMachine machine) {
+		this.machine = machine;
+	}
+	
+	/**
+	 * Get the session
+	 * @return
+	 */
+	public ISession getSession() {
+		return session;
+	}
+	
+	/**
+	 * Set the session
+	 * @param session
+	 */
+	public void setSession(ISession session) {
+		this.session = session;
+	}
+
+	/**
+	 * Method that permit to take a snapshot
+	 * @param snapName
+	 */
+	public void takeSnap(String snapName) {
+		Holder<String> id = new Holder<>(UUID.randomUUID().toString());
+		if (this.machine.getState() == MachineState.PoweredOff) {
+			boolean pause = false;
+			machine.lockMachine(session, LockType.Shared);
+			IProgress progress = this.session.getMachine().takeSnapshot(snapName, "offline snap", pause, id);
+			progress.waitForCompletion(-1);
+			session.unlockMachine();
+
+
+		} else {
+			boolean pause = true;
+			machine.lockMachine(session, LockType.Shared);
+			IProgress progress = this.session.getMachine().takeSnapshot(snapName, "else snap", pause, id);
+			progress.waitForCompletion(-1);
+			session.unlockMachine();
+		}
+	}
+
+	/**
+	 * Method that permit to delete the current snapshot
+	 */
+	public void deleteCurrentSnap() {
+		if (this.machine.getCurrentSnapshot() != null) {
+			String id = this.machine.getCurrentSnapshot().getId();
+			machine.lockMachine(session, LockType.Shared);
+			IProgress progress = this.session.getMachine().deleteSnapshot(id);
+			progress.waitForCompletion(-1);
+			session.unlockMachine();
+		}
+	}
+
+	/**
+	 * Method that permit to delete the snapshot Id
+	 * @param uuid
+	 */
+	public void deleteSnapById(String uuid) {
+		machine.lockMachine(session, LockType.Shared);
+		IProgress progress = this.session.getMachine().deleteSnapshot(uuid);
+		progress.waitForCompletion(-1);
+		session.unlockMachine();
+	}
+	
+
+	/**
+	 * Method that permit to restore from a snapshot
+	 * @param snap
+	 */
+	public void restoreFromSnap(ISnapshot snap) {
+		machine.lockMachine(session, LockType.Shared);
+		IProgress progress = this.session.getMachine().restoreSnapshot(snap);
+		progress.waitForCompletion(-1);
+		session.unlockMachine();
+	}
+	
+	/**
+	 * Method that permit to find the snapshot Id
+	 * @param uuid
+	 * @return
+	 */
+	public ISnapshot findSnapById(String uuid) {
+		ISnapshot  snap = null;
+		try {
+			snap = this.machine.findSnapshot(uuid);
+		} catch (Exception e) {
+			Log.warning(e.toString()); 
+			 
+		}
+		return snap;
+	}
+	
+	/**
+	 * Method that permit to find the snapshot by name
+	 * @param name
+	 * @return
+	 */
+	public ISnapshot findSnapByName(String name) {
+		ISnapshot  snap = null;
+		try {
+			snap = this.machine.findSnapshot(name);
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			  
+		}
+		return snap;
+	}
+	
+	/**
+	 * Method that permit to find the snapshot children
+	 * @return
+	 */
+	public List<ISnapshot> findSnapChildren() {
+		return this.machine.getCurrentSnapshot().getChildren();
+	}
+	
+	/**
+	 * Method that permit to find the snapshot current Id
+	 * @return
+	 */
+	public String getCurrentSnapId() {
+		String r = "null";
+		try {
+			r = this.machine.getCurrentSnapshot().getId();
+		} catch (Exception e) {
+			Log.warning(e.toString()); 
+			 
+		}
+		return r;
+	}
+	
+	/**
+	 * Method that permit to find the snapshot current name
+	 * @return
+	 */
+	public String getCurrentSnapName() {
+		String r ="null";
+		try {
+			this.currentSnap = this.machine.getCurrentSnapshot().getName();
+			r =  this.currentSnap;
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			  
+		}
+		return r;
+	}
+
+
+	/**
+	 * Method that permit to get tree snapshot name
+	 * @return
+	 */
+	public Map<String,Object> getTreeSnapshotsName() {
+		Map<String,Object> map = new HashMap<>();
+		try { 
+			this.currentSnap = this.machine.getCurrentSnapshot().getName();
+			if (this.machine.getCurrentSnapshot() != null) {
+				HashMap<String,Object> child = new HashMap<>();
+				ISnapshot snap = this.machine.findSnapshot(null);
+				child.put("id",snap.getId());
+				String name = snap.getName();
+				if(this.currentSnap.equals(name)){
+					map.put(name+" (current snapshot)", child);
+				}else{
+					map.put(name, child);
+				}
+				map.put(snap.getName(), child);
+				findSnap(child,snap);
+			}
+			
+		} catch (Exception e) { 
+			Log.warning(e.toString());
+			 
+		}
+		return map;
+	}
+	
+	public void findSnap(Map<String,Object> map, ISnapshot parent){
+		if(parent.getChildrenCount() != 0){
+			for (ISnapshot snapshotChildren : parent.getChildren()) {
+				System.out.println(snapshotChildren.getName());
+				HashMap<String,Object> child = new HashMap<>();
+				child.put("id",snapshotChildren.getId());
+				String name = snapshotChildren.getName();
+				if(this.currentSnap.equals(name)){
+					map.put(name+" (current snapshot)", child);
+				}else{
+					map.put(name, child);
+				} 
+				findSnap(child,  snapshotChildren);
+				
+			}
+		}
+		
+		
+		 
+	}
+	
+
+	
+	/**
+	 * Method that permit to find the number of snapshots
+	 * @return
+	 */
+	public long findNumberOfSnap() {
+		long r = 0L;
+		try {
+			r = this.machine.getCurrentSnapshot().getChildrenCount();
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+		return r;
+	}
+	
+	
+}

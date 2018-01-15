@@ -1,0 +1,316 @@
+package rwb.java.ldap;
+
+import java.io.IOException;
+import java.util.Hashtable;
+
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
+
+import org.apache.directory.api.ldap.model.entry.DefaultAttribute;
+import org.apache.directory.api.ldap.model.entry.DefaultEntry;
+import org.apache.directory.api.ldap.model.entry.DefaultModification;
+import org.apache.directory.api.ldap.model.entry.ModificationOperation;
+import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.ldap.client.api.LdapConnection;
+import org.apache.directory.ldap.client.api.LdapNetworkConnection;
+
+import rwb.config.Messages;
+
+public class MainLdap {
+
+	/**
+	 * Attributes
+	 */
+	private static final String CONSTANT_AD_IP 			= Messages.getString("ad_host");
+	private static final String CONSTANT_AD_IP_PORT 	= Messages.getString("ad_host_port");
+	private static final String CONSTANT_AD_LOGIN 		= Messages.getString("ad_login");
+	private static final String CONSTANT_AD_PASSWORD 	= Messages.getString("ad_pass");
+	private static final String CONSTANT_AD_BRANCH 		= Messages.getString("ad_branch");
+	
+	private static final String CONSTANT_SEARCH = "(&(objectclass=person)(cn=";
+
+	private static final String CONSTANT_LDAP_IP 		= Messages.getString("ldap_host");      
+	private static final String CONSTANT_LDAP_IP_PORT 	= Messages.getString("ldap_host_port"); 
+	private static final String CONSTANT_LDAP_LOGIN 	= Messages.getString("ldap_login");     
+	private static final String CONSTANT_LDAP_PASSWORD 	= Messages.getString("ldap_pass");      
+	private static final String CONSTANT_LDAP_BRANCH 	= Messages.getString("ldap_branch");    
+	
+	private final LdapConnection lLdapCo = new LdapNetworkConnection(CONSTANT_LDAP_IP, 389);
+	
+	/**
+	 * 
+	 */
+	public MainLdap() {
+		//default main
+	}
+
+	/**
+	 * 
+	 * @param userName
+	 * @param rigths
+	 * @param surname
+	 * @param uid
+	 * @param option
+	 * @param prenomNom
+	 * @throws LdapException
+	 * @throws IOException
+	 */
+	public void addUserLdap(String userName, String rigths, String surname, String uid, String option, String prenomNom) throws LdapException, IOException {
+		this.lLdapCo.bind(CONSTANT_LDAP_LOGIN, CONSTANT_LDAP_PASSWORD);
+		this.lLdapCo.add(new DefaultEntry(
+				// add a user
+				"cn=" + userName + ",ou=" + rigths + ","+CONSTANT_LDAP_BRANCH, // Distinguished
+																						// Name
+				"objectClass: organizationalPerson", "objectClass: inetOrgPerson", "objectClass: person","objectClass: top", 
+				"sn: "+surname, "uid: "+uid, "st: "+option,"givenName: "+prenomNom
+		));
+		this.lLdapCo.unBind();
+		this.lLdapCo.close();
+	}
+
+	/**
+	 * 
+	 * @param orgName
+	 * @throws LdapException
+	 * @throws IOException
+	 */
+	public void addOrganisationLdap(String orgName) throws LdapException, IOException {
+		// Connection to the active directory
+		this.lLdapCo.bind(CONSTANT_LDAP_LOGIN, CONSTANT_LDAP_PASSWORD);
+
+		this.lLdapCo.add(new DefaultEntry(
+
+				"ou=" + orgName + ","+CONSTANT_LDAP_BRANCH, // Distinguished
+																						// Name
+				"objectClass: organizationalUnit"
+		));
+		// end a connection
+		this.lLdapCo.unBind();
+		this.lLdapCo.close();
+	}
+
+	/**
+	 * 
+	 * @param userName
+	 * @param rigths
+	 * @param operation
+	 * @param attribut
+	 * @param contenu
+	 * @throws LdapException
+	 * @throws IOException
+	 */
+	public void changeUserLdap(String userName, String rigths, String operation, String attribut, String contenu)
+			throws LdapException, IOException {
+
+		this.lLdapCo.bind(CONSTANT_LDAP_LOGIN, CONSTANT_LDAP_PASSWORD);
+
+		switch (operation) {
+		case "ADD":
+			this.lLdapCo.modify(new Dn("CN=" + userName + ",ou=" + rigths + "," + CONSTANT_LDAP_BRANCH),
+					new DefaultModification(ModificationOperation.ADD_ATTRIBUTE,
+							new DefaultAttribute(attribut, contenu)));
+			break;
+		case "REPLACE":
+			this.lLdapCo.modify(new Dn("CN=" + userName + ",ou=" + rigths + "," + CONSTANT_LDAP_BRANCH),
+					new DefaultModification(ModificationOperation.REPLACE_ATTRIBUTE,
+							new DefaultAttribute(attribut, contenu)));
+			break;
+		case "REMOVE":
+			this.lLdapCo.modify(new Dn("CN=" + userName + ",ou=" + rigths + "," + CONSTANT_LDAP_BRANCH),
+					new DefaultModification(ModificationOperation.REMOVE_ATTRIBUTE,
+							new DefaultAttribute(attribut, contenu)));
+			break;
+		}
+		this.lLdapCo.unBind();
+		this.lLdapCo.close();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws LdapException
+	 * @throws IOException
+	 * @throws NamingException
+	 */
+	public String getListUsersLdap() throws LdapException, IOException, NamingException {
+
+		String returnListUsers = new String();
+		Hashtable<String, String> lEnvironment = new Hashtable<>();
+		// Connexion parameters
+		lEnvironment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		lEnvironment.put(Context.PROVIDER_URL, CONSTANT_LDAP_IP_PORT);
+		lEnvironment.put(Context.SECURITY_PRINCIPAL, CONSTANT_LDAP_LOGIN);
+		lEnvironment.put(Context.SECURITY_CREDENTIALS, CONSTANT_LDAP_PASSWORD);
+
+		// Initialisation
+		final LdapContext lLdapContext = new InitialLdapContext(lEnvironment, new Control[0]);
+		final SearchControls lSearchControls = new SearchControls();
+
+		// Research scope
+		lSearchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+		// does a query for each type of rigths that exist
+		final NamingEnumeration<SearchResult> resAdm = lLdapContext.search(CONSTANT_LDAP_BRANCH, "(&(objectclass=organizationalPerson))",
+				lSearchControls);
+		while (resAdm.hasMore()) {
+			// determines which rights the user has
+			returnListUsers=returnListUsers+(resAdm.next().getName())+"\n";
+		}
+		return returnListUsers;
+	}
+	
+	/**
+	 * 
+	 * @param userName
+	 * @return
+	 * @throws LdapException
+	 * @throws IOException
+	 * @throws NamingException
+	 */
+	public String[] getListUserAttributes(String userName) throws LdapException, IOException, NamingException {
+
+		String[] returnListAttributes = new String[]{null,null,null,null,null};
+		Hashtable<String, String> lEnvironment = new Hashtable<>();
+		// Connexion parameters
+		lEnvironment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		lEnvironment.put(Context.PROVIDER_URL, CONSTANT_LDAP_IP_PORT);
+		lEnvironment.put(Context.SECURITY_PRINCIPAL, CONSTANT_LDAP_LOGIN);
+		lEnvironment.put(Context.SECURITY_CREDENTIALS, CONSTANT_LDAP_PASSWORD);
+
+		// Initialisation
+		final SearchControls lSearchControls = new SearchControls();
+		// Research scope
+		lSearchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+		lSearchControls.setReturningAttributes(new String[]{"uid","sn","cn","givenName","st"});
+		//"uid"=Id
+		//"sn"=Surnom
+		//"cn"=nom qu'on ne peut modifier
+		//"givenName"= Nom Prénom
+		//"st"= Option (ex:cc/iit)
+		// does a query for each type of rigths that exist
+		InitialDirContext context= new InitialDirContext(lEnvironment);
+		SearchResult resultAttrFinal = null;
+				
+		final NamingEnumeration<SearchResult> resAttr = context.search(CONSTANT_LDAP_BRANCH, CONSTANT_SEARCH + userName + "))",
+				lSearchControls);
+				
+		while (resAttr.hasMore()) {
+			resultAttrFinal=resAttr.nextElement();
+		}
+		returnListAttributes[0]=resultAttrFinal.getAttributes().get("uid").get().toString();
+		returnListAttributes[1]=resultAttrFinal.getAttributes().get("sn").get().toString();
+		returnListAttributes[2]=resultAttrFinal.getAttributes().get("cn").get().toString();
+		returnListAttributes[3]=resultAttrFinal.getAttributes().get("st").get().toString();
+		returnListAttributes[4]=resultAttrFinal.getAttributes().get("givenName").get().toString();
+	
+		return returnListAttributes;
+	}
+	
+	/**
+	 * 
+	 * @param userName
+	 * @return
+	 * @throws NamingException
+	 * @throws LdapException
+	 * @throws IOException
+	 */
+	public String getUserRights(String userName) throws NamingException, LdapException, IOException {
+		// look in the ldap to return the rights of the user
+		final Hashtable<String, String> lEnvironment = new Hashtable<>();
+		// Connexion parameters
+		lEnvironment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		lEnvironment.put(Context.PROVIDER_URL, CONSTANT_LDAP_IP_PORT);
+		lEnvironment.put(Context.SECURITY_PRINCIPAL, CONSTANT_LDAP_LOGIN);
+		lEnvironment.put(Context.SECURITY_CREDENTIALS, CONSTANT_LDAP_PASSWORD);
+
+		// Initialisation
+		final LdapContext lLdapContext = new InitialLdapContext(lEnvironment, new Control[0]);
+		final SearchControls lSearchControls = new SearchControls();
+
+		// Research scope
+		lSearchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+		// does a query for each type of rigths that exist
+		final NamingEnumeration<SearchResult> resAdm = lLdapContext.search(CONSTANT_LDAP_BRANCH, CONSTANT_SEARCH + userName + "))",
+				lSearchControls);
+		final NamingEnumeration<SearchResult> resEtu = lLdapContext.search(CONSTANT_LDAP_BRANCH, CONSTANT_SEARCH + userName + "))",
+				lSearchControls);
+		final NamingEnumeration<SearchResult> resEnc = lLdapContext.search(CONSTANT_LDAP_BRANCH, CONSTANT_SEARCH + userName + "))",
+				lSearchControls);
+		final NamingEnumeration<SearchResult> resRef = lLdapContext.search(CONSTANT_LDAP_BRANCH, CONSTANT_SEARCH + userName + "))",
+				lSearchControls);
+
+		String returnRights = new String("Username does not exist");
+		while (resAdm.hasMore()) {
+			// determines which rights the user has
+			if (resAdm.next().getName().contains("admin")) {
+				returnRights = "admin";
+			}
+		}
+
+		while (resEtu.hasMore()) {
+			if (resEtu.next().getName().contains("etudiant")) {
+				returnRights = "etudiant";
+			}
+		}
+
+		while (resEnc.hasMore()) {
+			if (resEnc.next().getName().contains("encadrant")) {
+				returnRights = "encadrant";
+			}
+		}
+
+		while (resRef.hasMore()) {
+			if (resRef.next().getName().contains("referent")) {
+				returnRights = "referent";
+			}
+		}
+		resAdm.close();
+		resEtu.close();
+		resEnc.close();
+		resRef.close();
+
+		lLdapContext.close();
+
+		return returnRights;
+	}
+
+	/**
+	 * 
+	 * @param userName
+	 * @param rigths
+	 * @throws LdapException
+	 * @throws IOException
+	 * @throws NamingException
+	 */
+	public void deleteUserLdap(String userName, String rigths) throws LdapException, IOException, NamingException {
+		lLdapCo.bind(CONSTANT_LDAP_LOGIN, CONSTANT_LDAP_PASSWORD);
+		lLdapCo.delete("cn=" + userName + ",ou=" + rigths + ","+CONSTANT_LDAP_BRANCH);
+		lLdapCo.unBind();
+		lLdapCo.close();
+	}
+	
+	/**
+	 * 
+	 * @param orgName
+	 * @throws LdapException
+	 * @throws IOException
+	 */
+	public void deleteOrganisationLdap(String orgName) throws LdapException, IOException {
+		// Connection to the active directory
+		this.lLdapCo.bind(CONSTANT_LDAP_LOGIN, CONSTANT_LDAP_PASSWORD);
+
+		this.lLdapCo.delete("ou=" + orgName + ","+CONSTANT_LDAP_BRANCH);
+		// end a connection
+		this.lLdapCo.unBind();
+		this.lLdapCo.close();
+	}
+}

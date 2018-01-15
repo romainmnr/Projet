@@ -1,0 +1,151 @@
+package rwb.java.vb.dao;
+
+import java.io.IOException; 
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
+
+import org.virtualbox_5_0.VirtualBoxManager;
+
+import rwb.java.divers.Log;
+import rwb.java.server.bo.ServeurBO;
+
+
+public class VirtualBoxDAO {
+
+	private VirtualBoxManager vbm = VirtualBoxManager.createInstance(null);
+	private boolean available = false;
+	/**
+	 * 
+	 */
+	public VirtualBoxDAO(){
+		//nothing to do
+	}
+	/**
+	 * 
+	 * @param serveur
+	 */
+	public VirtualBoxDAO(ServeurBO serveur){
+		try{
+			connectionToVb(serveur.getIp(),serveur.getPort(),serveur.getUser(),serveur.getPassword());
+		}catch(Exception e){
+			Log.warning(e.getMessage());
+			 
+		}
+		
+	}
+	/**
+	 * 
+	 * @param url
+	 * @param port
+	 * @param user
+	 * @param passwd
+	 */
+	public VirtualBoxDAO(String url, int port, String user, String passwd){
+		connectionToVb(url, port, user,passwd);
+	}
+	/**
+	 * 
+	 * @param ip
+	 * @param port
+	 * @param user
+	 * @param passwd
+	 */
+	private void connectionToVb(String ip, int port, String user, String passwd){
+
+		SocketAddress sockaddr = new InetSocketAddress(ip, port);
+		// Create your socket
+		Socket socket = new Socket();
+		boolean online = true;
+		// Connect with 10 s timeout
+		try {
+			socket.connect(sockaddr, 10000);
+			socket.close();
+		} catch (SocketTimeoutException stex) {
+			
+			Log.warning(stex.toString());
+			online=false;
+		} catch (IOException iOException) {
+			Log.warning(iOException.toString());
+			online = false;    
+			
+		}
+
+		if(online){
+			Log.info("Server : "+ip+" -> ONLINE");
+			Log.info("\n"
+					+"::::::::::   :::    :::  :::     :::  ::::::::::  \n"
+					+":+:      :+:  :+:     :+:+:     :+:   :+:     :+: \n"
+					+"+:+      +:+   +:+     +:+     +:+    +:+     +:+ \n"
+					+":#:     :#:     :#:   :#:#:   :#:     :#:#:#:#:   \n"
+					+"+#++#++#+        +#+ +#+ +#+ +#+      +#+     +#+ \n"
+					+"#+#    #+#        #+:+#   #+:+#       #+#     #+# \n"
+					+"###     ###        ###     ###        #########   \n"
+					+"\n"
+					+"--------------------------------------- \n"
+					+"Creation of VirtualBoxManager instance. \n"
+					+"Try to connect to server: " + ip +"\n \n");
+			try{
+				String url = "http://"+ ip + ":"+ port;
+				vbm.connect(url, user, passwd);
+				available = true;
+				Log.info("VirtualBox version: " + vbm.getVBox().getVersion());
+
+			} catch(Exception e) {
+				Log.warning("Error during connecting to server : " + e.toString());
+				 
+			}
+		} else{
+			Log.warning("Server : "+ip+" -> OffLine");
+		}
+
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isAvailable() {
+		return available;
+	}
+	/**
+	 * 
+	 * @param available
+	 */
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public VirtualBoxManager getVbm() {
+		return vbm;
+	}
+	/**
+	 * 
+	 * @param vbm
+	 */
+	public void setVbm(VirtualBoxManager vbm) {
+		this.vbm = vbm;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean disconnect() {
+		Boolean r = false;
+		Log.info("\n \n"+"Try to disconect from VB server ... \n");
+		try {
+
+			this.vbm.cleanup();
+			this.vbm.disconnect();
+			r = true;
+		} catch (Exception e){
+			Log.warning("Error during deconnecting to server : " + e.toString());
+			 
+		}
+		return r;
+
+	}
+}

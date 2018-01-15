@@ -1,0 +1,13 @@
+\hypertarget{classrwb_1_1config_1_1_messages}{}\section{rwb.\+config.\+Messages Class Reference}
+\label{classrwb_1_1config_1_1_messages}\index{rwb.\+config.\+Messages@{rwb.\+config.\+Messages}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classrwb_1_1config_1_1_messages_a3593a36a03aa5d50586e13047dce85df}\label{classrwb_1_1config_1_1_messages_a3593a36a03aa5d50586e13047dce85df}} 
+static String {\bfseries get\+String} (String key)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/rwb/config/Messages.\+java\end{DoxyCompactItemize}

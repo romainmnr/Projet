@@ -1,0 +1,708 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ page import="java.sql.*"%>
+<%@ page import="java.text.*"%>
+<%@ page import="java.util.*"%>
+<%@ page import="javax.naming.*"%>
+<%@ page import="javax.sql.*"%>
+<%@ include file="/includes/action/checkSession.jsp"%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head> 
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Remote Web Box : Forum</title>
+		<% request.getSession().setAttribute("path", "../"); %>
+		<!-- MetaData and css import -->
+		<%@ include file="../includes/head.jsp"%>
+
+	</head>
+<body>
+
+	<div id="page-container" class="sidebar-l  side-scroll header-navbar-fixed">
+
+		<%@ include file="../includes/sideBar.jsp"%>
+		<%@ include file="../includes/header.jsp"%>
+		<% 
+		int topic_id = 0;
+		int forum = 0;
+		int post_id = 0;
+		int post_writer = 0;
+		int topic_first_post = 0;
+		int topic_last_post = 0;
+		int last_post_topic = 0;
+		int last_post_forum = 0;
+		int nombrepost = 0;
+		int post_writerTemp = 0;
+		int nombre_messTemp = 0;
+		int post_idTemp = 0;
+		String topicCases = request.getParameter("action");
+		switch(topicCases){
+			case "post":
+				if (request.getParameter("t")!=null){
+					topic_id=Integer.parseInt(request.getParameter("t"));
+					if (request.getParameter("f")!=null){
+						forum=Integer.parseInt(request.getParameter("f"));
+					}
+					%>
+					  <!-- Main Container -->
+				      <main id="main-container">
+				          <!-- Page Content -->
+				          <div class="content content-narrow">
+				              <!-- Breadcrumb -->
+				              <ol class="breadcrumb push-15">
+				                  <li><a class="text-muted" href="./Final.jsp">Forums</a></li>
+				              </ol>
+				              <!-- END Breadcrumb -->
+
+				              <!-- New Topic -->
+				              <div class="block">
+				                  <div class="block-header bg-gray-lighter">
+				                      <ul class="block-options">
+				                          <li>
+				                              <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+				                          </li>
+				                          <li>
+				                              <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+				                          </li>
+				                      </ul>
+				                  </div>
+				                  <div class="block-content block-content-full block-content-narrow">
+									<p><a href="./Final.jsp">Forum -</a>
+									<a href="./voirForum.jsp?f=<%=forum%>">Return to topic</a>
+									<h1>Anwser to the topic</h1><br /><br />
+				                      <form class="form-horizontal push-10-t" action="./TraitementNew.jsp?t=<%=topic_id%>&amp;action=post&amp;f=<%=forum%>" name="formulaire" method="post">
+				                          <div class="form-group">
+				                          	  <label for="topic-messsage">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Message <span class="text-danger">*</span></label>
+				                              <div class="col-xs-12">
+				                                  <!-- CKEditor (js-ckeditor id is initialized in App() -> uiHelperCkeditor()) -->
+				                                  <!-- For more info and examples you can check out http://ckeditor.com -->
+				                                  <textarea id="topic-messsage" name="topic-messsage" placeholder="Please write your message"></textarea>
+				                              </div>
+				                          </div>
+				                          <div class="form-group">
+				                              <div class="col-xs-12">
+				                                  <button class="btn btn-sm btn-primary" type="submit"><i class="fa fa-plus"></i> Add Message</button>
+				                              	
+				                              </div>
+				                          </div>
+				                      </form>
+				                  </div>
+				              </div>
+				              <!-- END New Topic -->
+				          </div>
+				          <!-- END Page Content -->
+				      </main>
+				      <!-- END Main Container --><%
+				}
+				break;
+			case"creation":
+				if (request.getParameter("f")!=null){
+					forum=Integer.parseInt(request.getParameter("f"));%>
+					  <!-- Main Container -->
+				      <main id="main-container">
+				          <!-- Page Content -->
+				          <div class="content content-narrow">
+				              <!-- Breadcrumb -->
+				              <ol class="breadcrumb push-15">
+				                  <li><a class="text-muted" href="./Final.jsp">Forums</a></li>
+				              </ol>
+				              <!-- END Breadcrumb -->
+
+				              <!-- New Topic -->
+				              <div class="block">
+				                  <div class="block-header bg-gray-lighter">
+				                      <ul class="block-options">
+				                          <li>
+				                              <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+				                          </li>
+				                          <li>
+				                              <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+				                          </li>
+				                      </ul>
+				                  </div>
+				                  <div class="block-content block-content-full block-content-narrow">
+				                      <p><a href="./Final.jsp">Forum</a>
+				                      <h1>Creation of a topic</h1><br /><br />
+				                      <form class="form-horizontal push-10-t" action="TraitementNew.jsp?f=<%=forum%>&amp;action=creation" name="formulaire" method="post">
+				                          <div class="form-group">
+				                              <div class="col-md-7">
+				                                  <div class="form-material form-material-primary">
+				                                      <input class="form-control" type="text" id="topic-title" name="topic-title" placeholder="Please enter a title">
+				                                      <label for="topic-title">Topic Title <span class="text-danger">*</span></label>
+				                                  </div>
+				                              </div>
+				                          </div>
+				                          <div class="form-group">
+				                          <label for="topic-messsage">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Message <span class="text-danger">*</span></label>
+				                              <div class="col-xs-12">
+				                                  <!-- CKEditor (js-ckeditor id is initialized in App() -> uiHelperCkeditor()) -->
+				                                  <!-- For more info and examples you can check out http://ckeditor.com -->
+				                                  <textarea class="form-control" type="text" id="topic-messsage" name="topic-messsage" placeholder="Please write your message"></textarea>
+				                                  
+				                              </div>
+				                          </div>
+				                          <div class="form-group">
+				                              <div class="col-xs-12">
+				                                  <button class="btn btn-sm btn-primary" type="submit" ><i class="fa fa-plus"></i> Add Topic</button>
+				                              	
+				                              </div>
+				                          </div>
+				                      </form>
+				                  </div>
+				              </div>
+				              <!-- END New Topic -->
+				          </div>
+				          <!-- END Page Content -->
+				      </main>
+				      <!-- END Main Container --><%
+				}
+				break;
+			case"edit":
+				if (request.getParameter("p")!=null){
+					post_id=Integer.parseInt(request.getParameter("p"));
+					if (request.getParameter("t")!=null){
+						topic_id=Integer.parseInt(request.getParameter("t"));
+						if (request.getParameter("f")!=null){
+							forum=Integer.parseInt(request.getParameter("f"));
+								%>
+								  <!-- Main Container -->
+							      <main id="main-container">
+							          <!-- Page Content -->
+							          <div class="content content-narrow">
+							              <!-- Breadcrumb -->
+							              <ol class="breadcrumb push-15">
+							                  <li><a class="text-muted" href="./Final.jsp">Forums</a></li>
+							              </ol>
+							              <!-- END Breadcrumb -->
+
+							              <!-- New Topic -->
+							              <div class="block">
+							                  <div class="block-header bg-gray-lighter">
+							                      <ul class="block-options">
+							                          <li>
+							                              <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+							                          </li>
+							                          <li>
+							                              <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+							                          </li>
+							                      </ul>
+							                  </div>
+							                  <div class="block-content block-content-full block-content-narrow">
+												<p><a href="./Final.jsp">Forum -</a>
+												<a href="./voirForum.jsp?f=<%=forum%>">Return to topic</a>
+												<h1>Editing the post</h1><br /><br />
+							                      <form class="form-horizontal push-10-t" action="./TraitementNew.jsp?p=<%=post_id%>&amp;action=edit&amp;t=<%=topic_id%>&amp;f=<%=forum%>" name="formulaire" method="post">
+							                          <div class="form-group">
+							                          	  <label for="topic-messsage">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Message <span class="text-danger">*</span></label>
+							                              <div class="col-xs-12">
+							                                  <!-- CKEditor (js-ckeditor id is initialized in App() -> uiHelperCkeditor()) -->
+							                                  <!-- For more info and examples you can check out http://ckeditor.com -->
+							                                  <textarea id="topic-messsage" name="topic-messsage" placeholder="Please write your message"></textarea>
+							                              </div>
+							                          </div>
+							                          <div class="form-group">
+							                              <div class="col-xs-12">
+							                                  <button class="btn btn-sm btn-primary" type="submit"><i class="fa fa-plus"></i> Edit Message</button>
+							                              	
+							                              </div>
+							                          </div>
+							                      </form>
+							                  </div>
+							              </div>
+							              <!-- END New Topic -->
+							          </div>
+							          <!-- END Page Content -->
+							      </main>
+							      <!-- END Main Container --><%
+						}
+					}
+				}
+				break;
+			case "delete": 
+				if (request.getParameter("p")!=null){
+					post_id=Integer.parseInt(request.getParameter("p"));
+					if (request.getParameter("t")!=null){
+						topic_id=Integer.parseInt(request.getParameter("t"));
+						if (request.getParameter("f")!=null){
+							forum=Integer.parseInt(request.getParameter("f"));
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt = con.prepareStatement("SELECT post_writer FROM forum_post"
+									    +" LEFT JOIN forum_forum ON forum_post.post_forum_id = forum_forum.forum_id"
+									    +" WHERE post_id=?");
+								prepStmt.setInt(1,post_id);
+								ResultSet rset = null;
+								prepStmt.execute();
+								rset = prepStmt.getResultSet();
+
+								while (rset.next()) {
+									post_writer = rset.getInt("post_writer");
+								}
+								rset.close();
+								prepStmt.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con2 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt2 = con2.prepareStatement("SELECT topic_first_post, topic_last_post FROM forum_topic"
+								        +" WHERE topic_id = ?");
+								prepStmt2.setInt(1,topic_id);
+								ResultSet rset2 = null;
+								prepStmt2.execute();
+								rset2 = prepStmt2.getResultSet();
+
+								while (rset2.next()) {
+									topic_first_post = rset2.getInt("topic_first_post");
+									topic_last_post = rset2.getInt("topic_last_post");
+								}
+								rset2.close();
+								prepStmt2.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+							if (topic_first_post==post_id){
+								%>
+								<main id="main-container">
+				          <!-- Page Content -->
+				          <div class="content content-narrow">
+				              <!-- Breadcrumb -->
+				              <ol class="breadcrumb push-15">
+				                  <li><a class="text-muted" href="./Final.jsp">Forums</a></li>
+				              </ol>
+				              <!-- END Breadcrumb -->
+
+				              <!-- New Topic -->
+				              <div class="block">
+				                  <div class="block-header bg-gray-lighter">
+				                      <ul class="block-options">
+				                          <li>
+				                              <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+				                          </li>
+				                          <li>
+				                              <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+				                          </li>
+				                      </ul>
+				                  </div>
+				                  <div class="block-content block-content-full block-content-narrow">
+				                      <p><a href="./Final.jsp">Forum</a>
+				                      <br />
+				                      <br />
+				                      <br />
+				                      <p>You choose to delete the post but it's the first one of the topic. Do you want to delete the topic?<br />
+								  <a href="./NewTopic.jsp?action=delete_topic&amp;t=<%=topic_id%>&amp;p=<%=post_id%>&amp;f=<%=forum%>">Yes</a> - <a href="./voirForum.jsp?f=<%=forum%>">No</a>
+           						</p>
+				                  </div>
+				              </div>
+				              <!-- END New Topic -->
+				          </div>
+				          <!-- END Page Content -->
+				      </main>
+				      <!-- END Main Container -->
+								<%
+							}else if (topic_last_post==post_id){
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt = con.prepareStatement("DELETE FROM forum_post WHERE post_id = ?");
+									prepStmt.setInt(1,post_id);
+									prepStmt.execute();
+									prepStmt.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con2 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt2 = con2.prepareStatement("SELECT post_id FROM forum_post WHERE topic_id = ?"
+								            +" ORDER BY post_id DESC LIMIT 0,1");
+									prepStmt2.setInt(1,topic_id);
+									ResultSet rset2 = null;
+									prepStmt2.execute();
+									rset2 = prepStmt2.getResultSet();
+									while (rset2.next()) {
+										last_post_topic = rset2.getInt("post_id");
+									}
+									rset2.close();
+									prepStmt2.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con3 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt3 = con3.prepareStatement("SELECT post_id FROM forum_post WHERE post_forum_id = ?"
+								            +" ORDER BY post_id DESC LIMIT 0,1");
+									prepStmt3.setInt(1,topic_id);
+									ResultSet rset3 = null;
+									prepStmt3.execute();
+									rset3 = prepStmt3.getResultSet();
+									while (rset3.next()) {
+										last_post_forum = rset3.getInt("post_id");
+									}
+									rset3.close();
+									prepStmt3.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con4 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt4 = con4.prepareStatement("UPDATE forum_topic SET topic_last_post = ?"
+								            +" WHERE topic_last_post = ?");
+									prepStmt4.setInt(1,last_post_topic);
+									prepStmt4.setInt(2,post_id);
+									prepStmt4.execute();
+									prepStmt4.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con5 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt5 = con5.prepareStatement("UPDATE forum_forum SET forum_post = forum_post - 1, forum_last_post_id = ?"
+								            +" WHERE forum_id = ?");
+									prepStmt5.setInt(1,last_post_forum);
+									prepStmt5.setInt(2,forum);
+									prepStmt5.execute();
+									prepStmt5.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con6 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt6 = con6.prepareStatement("UPDATE forum_topic SET topic_post = topic_post - 1"
+								            +" WHERE topic_id = ?");
+									prepStmt6.setInt(1,topic_id);
+									prepStmt6.execute();
+									prepStmt6.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con7 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt7 = con7.prepareStatement("UPDATE RemoteWebBox_Users SET member_posts = member_posts - 1"
+								            +" WHERE idUser = ?");
+									prepStmt7.setInt(1,post_writer);
+									prepStmt7.execute();
+									prepStmt7.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								%>
+								<main id="main-container">
+						          <!-- Page Content -->
+						          <div class="content content-narrow">
+						              <!-- Breadcrumb -->
+						              <ol class="breadcrumb push-15">
+						                  <li><a class="text-muted" href="./Final.jsp">Forums</a></li>
+						              </ol>
+						              <!-- END Breadcrumb -->
+
+						              <!-- New Topic -->
+						              <div class="block">
+						                  <div class="block-header bg-gray-lighter">
+						                      <ul class="block-options">
+						                          <li>
+						                              <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+						                          </li>
+						                          <li>
+						                              <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+						                          </li>
+						                      </ul>
+						                  </div>
+						                  <div class="block-content block-content-full block-content-narrow">
+						                      <p><a href="./Final.jsp">Forum</a>
+						                      <br />
+						                      <br />
+						                      <br />
+											<a class="link-effect" href="./voirForum.jsp?f=<%=forum%>">SUCCESSFULLY DELETED</a>
+		           						</p>
+						                  </div>
+						              </div>
+						              <!-- END New Topic -->
+						          </div>
+						          <!-- END Page Content -->
+						      </main>
+						      <!-- END Main Container -->
+								<%
+							}else{
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt1 = con1.prepareStatement("DELETE FROM forum_post WHERE post_id = ?");
+									prepStmt1.setInt(1,post_id);
+									prepStmt1.execute();
+									prepStmt1.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con2 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt2 = con2.prepareStatement("UPDATE forum_forum SET forum_post = forum_post - 1, forum_last_post_id = ?"
+								            +" WHERE forum_id = ?");
+									prepStmt2.setInt(1,last_post_forum);
+									prepStmt2.setInt(2,forum);
+									prepStmt2.execute();
+									prepStmt2.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con3 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt3 = con3.prepareStatement("UPDATE forum_topic SET topic_post = topic_post - 1"
+								            +" WHERE topic_id = ?");
+									prepStmt3.setInt(1,topic_id);
+									prepStmt3.execute();
+									prepStmt3.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+								try {
+									Class.forName("com.mysql.jdbc.Driver");
+									DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+									Connection con4 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+									PreparedStatement prepStmt4 = con4.prepareStatement("UPDATE RemoteWebBox_Users SET member_posts = member_posts - 1"
+								            +" WHERE idUser = ?");
+									prepStmt4.setInt(1,post_writer);
+									prepStmt4.execute();
+									prepStmt4.close();
+									} catch (SQLException e) {
+										System.out.println(e);
+									}
+																%>
+								<main id="main-container">
+						          <!-- Page Content -->
+						          <div class="content content-narrow">
+						              <!-- Breadcrumb -->
+						              <ol class="breadcrumb push-15">
+						                  <li><a class="text-muted" href="./Final.jsp">Forums</a></li>
+						              </ol>
+						              <!-- END Breadcrumb -->
+
+						              <!-- New Topic -->
+						              <div class="block">
+						                  <div class="block-header bg-gray-lighter">
+						                      <ul class="block-options">
+						                          <li>
+						                              <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+						                          </li>
+						                          <li>
+						                              <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+						                          </li>
+						                      </ul>
+						                  </div>
+						                  <div class="block-content block-content-full block-content-narrow">
+						                      <p><a href="./Final.jsp">Forum</a>
+						                      <br />
+						                      <br />
+						                      <br />
+											<a class="link-effect" href="./voirForum.jsp?f=<%=forum%>">SUCCESSFULLY DELETED</a>
+		           						</p>
+						                  </div>
+						              </div>
+						              <!-- END New Topic -->
+						          </div>
+						          <!-- END Page Content -->
+						      </main>
+						      <!-- END Main Container -->
+								<%
+							}
+						}
+					}
+				}
+				break;
+			case "delete_topic": 
+				if (request.getParameter("p")!=null){
+					post_id=Integer.parseInt(request.getParameter("p"));
+					if (request.getParameter("t")!=null){
+						topic_id=Integer.parseInt(request.getParameter("t"));
+						if (request.getParameter("f")!=null){
+							forum=Integer.parseInt(request.getParameter("f"));
+							
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt = con.prepareStatement("SELECT topic_post FROM forum_topic WHERE topic_id = ?");
+								prepStmt.setInt(1,topic_id);
+								ResultSet rset = null;
+								prepStmt.execute();
+								rset = prepStmt.getResultSet();
+								while (rset.next()) {
+									nombrepost = rset.getInt("topic_post");
+								}
+								rset.close();
+								prepStmt.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con2 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt2 = con2.prepareStatement("DELETE FROM forum_topic WHERE topic_id = ?");
+								prepStmt2.setInt(1,topic_id);
+								prepStmt2.execute();
+								prepStmt2.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con3 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt3 = con3.prepareStatement("SELECT post_writer, COUNT(*) AS nombre_mess FROM forum_post"
+								        +" WHERE topic_id = ? GROUP BY post_writer");
+								prepStmt3.setInt(1,topic_id);
+								ResultSet rset3 = null;
+								prepStmt3.execute();
+								rset3 = prepStmt3.getResultSet();
+								while (rset3.next()) {
+									nombre_messTemp = rset3.getInt("nombre_mess");
+									post_writerTemp = rset3.getInt("post_writer");
+									
+									try {
+										Class.forName("com.mysql.jdbc.Driver");
+										DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+										Connection con4 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+										PreparedStatement prepStmt4 = con4.prepareStatement("UPDATE RemoteWebBox_Users"
+									            +" SET member_posts = member_posts - ?"
+									            +" WHERE idUser = ?");
+										prepStmt4.setInt(1,nombre_messTemp);
+										prepStmt4.setInt(2,post_writerTemp);
+										prepStmt4.execute();
+										prepStmt4.close();
+										} catch (SQLException e) {
+											System.out.println(e);
+										}
+								}
+								rset3.close();
+								prepStmt3.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con5 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt5 = con5.prepareStatement("DELETE FROM forum_post WHERE topic_id = ?");
+								prepStmt5.setInt(1,topic_id);
+								prepStmt5.execute();
+								prepStmt5.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con6 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt6 = con6.prepareStatement("SELECT post_id FROM forum_post WHERE post_forum_id = ?"
+							            +" ORDER BY post_id DESC LIMIT 0,1");
+								prepStmt6.setInt(1,forum);
+								ResultSet rset6 = null;
+								prepStmt6.execute();
+								rset6 = prepStmt6.getResultSet();
+								while (rset6.next()) {
+									post_idTemp = rset6.getInt("post_id");
+								}
+								rset6.close();
+								prepStmt6.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+							
+							try {
+								Class.forName("com.mysql.jdbc.Driver");
+								DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+								Connection con7 = DriverManager.getConnection("jdbc:mysql://localhost:3306/RemoteWebBox", "RemoteWebBox","ProjetCC");
+								PreparedStatement prepStmt7 = con7.prepareStatement("UPDATE forum_forum"
+								        +" SET forum_topic = forum_topic - 1, forum_post = forum_post - ?, forum_last_post_id = ?"
+								        +" WHERE forum_id = ?");
+								prepStmt7.setInt(1,nombrepost);
+								prepStmt7.setInt(2,post_idTemp);
+								prepStmt7.setInt(3,forum);
+								prepStmt7.execute();
+								prepStmt7.close();
+								} catch (SQLException e) {
+									System.out.println(e);
+								}
+
+							%>
+							<main id="main-container">
+					          <!-- Page Content -->
+					          <div class="content content-narrow">
+					              <!-- Breadcrumb -->
+					              <ol class="breadcrumb push-15">
+					                  <li><a class="text-muted" href="./Final.jsp">Forums</a></li>
+					              </ol>
+					              <!-- END Breadcrumb -->
+
+					              <!-- New Topic -->
+					              <div class="block">
+					                  <div class="block-header bg-gray-lighter">
+					                      <ul class="block-options">
+					                          <li>
+					                              <button type="button" data-toggle="block-option" data-action="fullscreen_toggle"></button>
+					                          </li>
+					                          <li>
+					                              <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+					                          </li>
+					                      </ul>
+					                  </div>
+					                  <div class="block-content block-content-full block-content-narrow">
+					                      <p><a href="./Final.jsp">Forum</a>
+					                      <br />
+					                      <br />
+					                      <br />
+										<a class="link-effect" href="./voirForum.jsp?f=<%=forum%>">SUCCESSFULLY DELETED</a>
+	           						</p>
+					                  </div>
+					              </div>
+					              <!-- END New Topic -->
+					          </div>
+					          <!-- END Page Content -->
+					      </main>
+					      <!-- END Main Container -->
+							<%
+							
+							
+							
+						}
+					}
+				}
+				break;
+		}%>
+
+	</div>
+	<%@ include file="../includes/footer.jsp"%>
+
+</body>
+</html>
+<% request.getSession().removeAttribute("path"); %>

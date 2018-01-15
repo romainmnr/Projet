@@ -1,0 +1,87 @@
+package rwb.servlet.general;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+
+import rwb.java.bdd.bo.BddServeurBO;
+import rwb.java.divers.Log;
+
+/**
+ * Servlet implementation class BddServlet
+ */
+@WebServlet("/BddServlet")
+public class BddServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public BddServlet() {
+		super();
+	}
+
+	/**
+	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String function = (String) request.getParameter("fn");
+		BddServeurBO bddBo = new BddServeurBO();
+		Log.info("Function : " + function);
+		HashMap<String,Object> resp = new HashMap<>();
+		Object data = null;
+		Boolean error = false;
+
+		try{
+			
+			switch (function) {
+			case "toogleServer":
+				bddBo.toggleSrvState((String) request.getParameter("srv"));
+				break;
+			case "getListName":
+				data = bddBo.getListVmName();
+				break;
+			default:
+				break;
+			}
+			bddBo.close();
+			
+		}catch(Exception e){
+			Log.warning(e.toString()); 
+			error = true;
+			 
+		}
+	
+		
+		/**
+		 * Response parse
+		 */
+
+		HashMap<String, Object> header = new HashMap<>();
+		if (error) {
+			header.put("statut", "503");
+			header.put("msg", "Error");
+		} else {
+			header.put("statut", "200");
+			header.put("msg", "ok");
+		} 
+		resp.put("header", header);
+		resp.put("data", data);
+
+		Gson gson = new Gson();
+		String json = gson.toJson(resp);
+
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().write(json);
+
+	}
+}

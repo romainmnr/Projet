@@ -1,0 +1,9 @@
+ 
+
+<suite name="Remote Web Box Test Suite">
+  <test name="BatterieTest1">
+    <classes>
+      <class name="projet.vb.connection.ConnectionVbTest"/>   
+    </classes>
+  </test> <!-- tests -->
+</suite>

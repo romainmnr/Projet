@@ -1,0 +1,55 @@
+\hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o}{}\section{rwb.\+java.\+ftp.\+bo.\+Ftp\+BO Class Reference}
+\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o}\index{rwb.\+java.\+ftp.\+bo.\+Ftp\+BO@{rwb.\+java.\+ftp.\+bo.\+Ftp\+BO}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a23aef9f08cdc34dd1460090b2323670b}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a23aef9f08cdc34dd1460090b2323670b}} 
+{\bfseries Ftp\+BO} (\hyperlink{classrwb_1_1java_1_1ftp_1_1dao_1_1_ftp_d_a_o}{Ftp\+D\+AO} dao)
+\item 
+F\+T\+P\+Client \hyperlink{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_ac746fda6a89cbac8d1babe1944f006d3}{get\+Client} ()
+\item 
+void \hyperlink{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a3026eeb8fde3cdbfe9cbbd347474e96f}{set\+Client} (F\+T\+P\+Client client)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a8d43bccc427ca151eef99f5ebd98d4a6}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a8d43bccc427ca151eef99f5ebd98d4a6}} 
+void {\bfseries disconnect} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a4027218655322a1c7a147f711296c196}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a4027218655322a1c7a147f711296c196}} 
+Hash\+Map$<$ String, Object $>$ {\bfseries ls} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a115b3a0aa89b94f820e57392b57013a6}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a115b3a0aa89b94f820e57392b57013a6}} 
+void {\bfseries cd} (String path)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a434bc1c82be6378cd01bc21199d7db38}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a434bc1c82be6378cd01bc21199d7db38}} 
+void {\bfseries cd\+Up} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_aae1765b8545a6bf8769658a8ef469562}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_aae1765b8545a6bf8769658a8ef469562}} 
+void {\bfseries mkdir} (String path)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_ac746fda6a89cbac8d1babe1944f006d3}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_ac746fda6a89cbac8d1babe1944f006d3}} 
+\index{rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO@{rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO}!get\+Client@{get\+Client}}
+\index{get\+Client@{get\+Client}!rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO@{rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO}}
+\subsubsection{\texorpdfstring{get\+Client()}{getClient()}}
+{\footnotesize\ttfamily F\+T\+P\+Client rwb.\+java.\+ftp.\+bo.\+Ftp\+B\+O.\+get\+Client (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+the client 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a3026eeb8fde3cdbfe9cbbd347474e96f}\label{classrwb_1_1java_1_1ftp_1_1bo_1_1_ftp_b_o_a3026eeb8fde3cdbfe9cbbd347474e96f}} 
+\index{rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO@{rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO}!set\+Client@{set\+Client}}
+\index{set\+Client@{set\+Client}!rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO@{rwb\+::java\+::ftp\+::bo\+::\+Ftp\+BO}}
+\subsubsection{\texorpdfstring{set\+Client()}{setClient()}}
+{\footnotesize\ttfamily void rwb.\+java.\+ftp.\+bo.\+Ftp\+B\+O.\+set\+Client (\begin{DoxyParamCaption}\item[{F\+T\+P\+Client}]{client }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em client} & the client to set \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/rwb/java/ftp/bo/Ftp\+B\+O.\+java\end{DoxyCompactItemize}

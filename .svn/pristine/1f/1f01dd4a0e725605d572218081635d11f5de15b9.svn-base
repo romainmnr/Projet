@@ -1,0 +1,50 @@
+\hypertarget{classrwb_1_1servlet_1_1general_1_1_bdd_servlet}{}\section{rwb.\+servlet.\+general.\+Bdd\+Servlet Class Reference}
+\label{classrwb_1_1servlet_1_1general_1_1_bdd_servlet}\index{rwb.\+servlet.\+general.\+Bdd\+Servlet@{rwb.\+servlet.\+general.\+Bdd\+Servlet}}
+Inheritance diagram for rwb.\+servlet.\+general.\+Bdd\+Servlet\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classrwb_1_1servlet_1_1general_1_1_bdd_servlet}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classrwb_1_1servlet_1_1general_1_1_bdd_servlet_a01b4b12c1066a4c6288ad4895e1e456d}{Bdd\+Servlet} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classrwb_1_1servlet_1_1general_1_1_bdd_servlet_a9b0ef12180a95df25022f7d2644fbde0}{service} (Http\+Servlet\+Request request, Http\+Servlet\+Response response)  throws Servlet\+Exception, I\+O\+Exception 
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Servlet implementation class \hyperlink{classrwb_1_1servlet_1_1general_1_1_bdd_servlet}{Bdd\+Servlet} 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classrwb_1_1servlet_1_1general_1_1_bdd_servlet_a01b4b12c1066a4c6288ad4895e1e456d}\label{classrwb_1_1servlet_1_1general_1_1_bdd_servlet_a01b4b12c1066a4c6288ad4895e1e456d}} 
+\index{rwb\+::servlet\+::general\+::\+Bdd\+Servlet@{rwb\+::servlet\+::general\+::\+Bdd\+Servlet}!Bdd\+Servlet@{Bdd\+Servlet}}
+\index{Bdd\+Servlet@{Bdd\+Servlet}!rwb\+::servlet\+::general\+::\+Bdd\+Servlet@{rwb\+::servlet\+::general\+::\+Bdd\+Servlet}}
+\subsubsection{\texorpdfstring{Bdd\+Servlet()}{BddServlet()}}
+{\footnotesize\ttfamily rwb.\+servlet.\+general.\+Bdd\+Servlet.\+Bdd\+Servlet (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxySeeAlso}{See also}
+Http\+Servlet\+::\+Http\+Servlet() 
+\end{DoxySeeAlso}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classrwb_1_1servlet_1_1general_1_1_bdd_servlet_a9b0ef12180a95df25022f7d2644fbde0}\label{classrwb_1_1servlet_1_1general_1_1_bdd_servlet_a9b0ef12180a95df25022f7d2644fbde0}} 
+\index{rwb\+::servlet\+::general\+::\+Bdd\+Servlet@{rwb\+::servlet\+::general\+::\+Bdd\+Servlet}!service@{service}}
+\index{service@{service}!rwb\+::servlet\+::general\+::\+Bdd\+Servlet@{rwb\+::servlet\+::general\+::\+Bdd\+Servlet}}
+\subsubsection{\texorpdfstring{service()}{service()}}
+{\footnotesize\ttfamily void rwb.\+servlet.\+general.\+Bdd\+Servlet.\+service (\begin{DoxyParamCaption}\item[{Http\+Servlet\+Request}]{request,  }\item[{Http\+Servlet\+Response}]{response }\end{DoxyParamCaption}) throws Servlet\+Exception, I\+O\+Exception\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxySeeAlso}{See also}
+Http\+Servlet\+::service(\+Http\+Servlet\+Request request, Http\+Servlet\+Response response) 
+\end{DoxySeeAlso}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/rwb/servlet/general/Bdd\+Servlet.\+java\end{DoxyCompactItemize}

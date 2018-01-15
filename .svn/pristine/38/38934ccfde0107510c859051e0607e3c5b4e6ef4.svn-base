@@ -1,0 +1,126 @@
+package rwb.servlet.machine;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.virtualbox_5_0.IMedium;
+
+import com.google.gson.Gson;
+
+import rwb.java.bdd.bo.BddServeurBO;
+import rwb.java.divers.HashmapBO;
+import rwb.java.divers.Log;
+import rwb.java.server.bo.ServeurBO;
+import rwb.java.vb.bo.VirtualBoxBO;
+import rwb.java.vb.dao.VirtualBoxDAO;
+
+
+/**
+ * Servlet implementation class CreateVmServlet
+ * 
+ * Author : Romain MEUNIER
+ */
+
+
+@WebServlet("/CreateMachine")
+public class CreateMachine extends HttpServlet {
+	
+	private static final long serialVersionUID = 1L;
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public CreateMachine() {
+        super();
+    }
+    
+	/**
+	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+		VirtualBoxBO vbox = null;
+		BddServeurBO bdd = null;
+		List<ServeurBO> listServeur = null;
+		
+		Boolean error = false;
+		/**
+		 * Get information from the form
+		 */
+		HashmapBO map = new HashmapBO();
+		
+		String serverId = 	(String)request.getParameter("vm-server");
+		map.setName((String)request.getParameter("vm-name"));
+		map.setOs((String)request.getParameter("vm-os"));
+		map.setRam((String)request.getParameter("vm-ram"));
+		map.setNbCPU((String)request.getParameter("vm-cpu"));
+		
+		/**
+		 *     Create machine
+		 *
+		 */
+		try{
+			Log.info("Try to create Vm ...");
+			
+			bdd = new BddServeurBO();
+			listServeur = bdd.getServeurs("enabled");
+			ServeurBO srv = ServeurBO.getServeur(listServeur, serverId);
+			
+			vbox = new VirtualBoxBO(new VirtualBoxDAO(srv),true);
+			String pathMachine = vbox.getPathMachineFolder();
+
+			if(request.getParameter("vm-hdd-enable") != null){ 
+				Log.info("Create HDD");
+				IMedium medium = vbox.createDrive(map.getName(),map.getName(), (String)request.getParameter("vm-hdd-format"), pathMachine+"/", Long.valueOf(request.getParameter("vm-hdd-size")));
+				map.createHDD("IDE", medium); 
+			}
+			Log.info(map.generateConfigHashMap().toString());
+			vbox.createMachine((HashMap<String,Object>)map.generateConfigHashMap(), map.getName());
+		}catch(Exception e){
+			Log.warning(e.toString());
+			error = true;
+			 
+		}
+		if(!error){
+			bdd.createMachine(map.getName(), map.getOs(), serverId, (String)request.getSession().getAttribute("login-id"), "");
+		}
+		
+		/**
+		 * Response parse 
+		 */
+		HashMap<String,Object> resp = new HashMap<>();
+		HashMap<String,Object> header = new HashMap<>();
+		if(error){
+			header.put("statut", "503");
+			header.put("msg", "Machine not created");
+		}else{
+			header.put("statut", "201");
+			header.put("msg", "Machine created");
+		}
+		
+		header.put("srvId", serverId);
+		header.put("vmId", map.getName());
+		
+		HashMap<String,Object> data = new HashMap<>();
+		data.put("srvId", serverId);
+		data.put("vmId", map.getName());
+		
+		resp.put("header", header);
+		resp.put("data", data);
+			
+		
+		Gson gson = new Gson(); 
+		String json = gson.toJson(resp); 
+			
+		
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.getWriter().write(json);	
+	}
+}

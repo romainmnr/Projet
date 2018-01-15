@@ -1,0 +1,31 @@
+\hypertarget{classrwb_1_1java_1_1divers_1_1_tools}{}\section{rwb.\+java.\+divers.\+Tools Class Reference}
+\label{classrwb_1_1java_1_1divers_1_1_tools}\index{rwb.\+java.\+divers.\+Tools@{rwb.\+java.\+divers.\+Tools}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1divers_1_1_tools_acc251473e46084b798ed06c5281a2a03}\label{classrwb_1_1java_1_1divers_1_1_tools_acc251473e46084b798ed06c5281a2a03}} 
+static Hash\+Map$<$ String, Hash\+Map$<$ String, String $>$ $>$ {\bfseries get\+OS} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1divers_1_1_tools_ab9d853148100c4e21c70f7622b750afd}\label{classrwb_1_1java_1_1divers_1_1_tools_ab9d853148100c4e21c70f7622b750afd}} 
+static String {\bfseries get\+Os\+Type} (String os\+Type\+Id)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1divers_1_1_tools_a3f984a5524cf19f7ff62c7290db6ef3c}\label{classrwb_1_1java_1_1divers_1_1_tools_a3f984a5524cf19f7ff62c7290db6ef3c}} 
+static String {\bfseries get\+Os\+Icon} (String os\+Type\+Id)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1divers_1_1_tools_a809d6e03c300b8e3333f4271370e69ed}\label{classrwb_1_1java_1_1divers_1_1_tools_a809d6e03c300b8e3333f4271370e69ed}} 
+static String {\bfseries convert\+Size} (long bytes, boolean si)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1divers_1_1_tools_a7edbe59b2429f8688c175c97bf594718}\label{classrwb_1_1java_1_1divers_1_1_tools_a7edbe59b2429f8688c175c97bf594718}} 
+static void {\bfseries set\+Timeout} (Runnable runnable, int delay)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class contenant divers outils nécessaires au projet \begin{DoxyAuthor}{Author}
+Romain M. 
+\end{DoxyAuthor}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/rwb/java/divers/Tools.\+java\end{DoxyCompactItemize}

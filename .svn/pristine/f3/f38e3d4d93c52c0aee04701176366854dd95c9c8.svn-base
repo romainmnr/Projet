@@ -1,0 +1,46 @@
+\hypertarget{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o}{}\section{rwb.\+java.\+bdd.\+dao.\+Bdd\+Serveur\+D\+AO Class Reference}
+\label{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o}\index{rwb.\+java.\+bdd.\+dao.\+Bdd\+Serveur\+D\+AO@{rwb.\+java.\+bdd.\+dao.\+Bdd\+Serveur\+D\+AO}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a961c4bb439f6711d465aaa41f19fd9c3}{Bdd\+Serveur\+D\+AO} ()
+\item 
+Result\+Set \hyperlink{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a64aad456ae8848c782fb0497324a8935}{execute} (String q)
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_aaec82f9c5c7ec2bee0dcb7ae31be8919}\label{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_aaec82f9c5c7ec2bee0dcb7ae31be8919}} 
+void {\bfseries close\+Rset} ()
+\item 
+\mbox{\Hypertarget{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a7b0757a23fbd573fddd18eab907f303a}\label{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a7b0757a23fbd573fddd18eab907f303a}} 
+void {\bfseries close\+Bdd} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a961c4bb439f6711d465aaa41f19fd9c3}\label{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a961c4bb439f6711d465aaa41f19fd9c3}} 
+\index{rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO@{rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO}!Bdd\+Serveur\+D\+AO@{Bdd\+Serveur\+D\+AO}}
+\index{Bdd\+Serveur\+D\+AO@{Bdd\+Serveur\+D\+AO}!rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO@{rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO}}
+\subsubsection{\texorpdfstring{Bdd\+Serveur\+D\+A\+O()}{BddServeurDAO()}}
+{\footnotesize\ttfamily rwb.\+java.\+bdd.\+dao.\+Bdd\+Serveur\+D\+A\+O.\+Bdd\+Serveur\+D\+AO (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Constructor -\/$>$ load driver and create connection 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a64aad456ae8848c782fb0497324a8935}\label{classrwb_1_1java_1_1bdd_1_1dao_1_1_bdd_serveur_d_a_o_a64aad456ae8848c782fb0497324a8935}} 
+\index{rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO@{rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO}!execute@{execute}}
+\index{execute@{execute}!rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO@{rwb\+::java\+::bdd\+::dao\+::\+Bdd\+Serveur\+D\+AO}}
+\subsubsection{\texorpdfstring{execute()}{execute()}}
+{\footnotesize\ttfamily Result\+Set rwb.\+java.\+bdd.\+dao.\+Bdd\+Serveur\+D\+A\+O.\+execute (\begin{DoxyParamCaption}\item[{String}]{q }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em q,String} & query to be execute \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Result\+Set of the query, null if no result 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/rwb/java/bdd/dao/Bdd\+Serveur\+D\+A\+O.\+java\end{DoxyCompactItemize}

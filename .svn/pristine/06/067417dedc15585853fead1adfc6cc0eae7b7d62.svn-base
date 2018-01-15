@@ -1,0 +1,125 @@
+<!-- Create a project, giving it a name, setting the base directory and setting a namespace for jacoco,
+otherwise eclipse highlights an error -->
+<project name="Remote Web Box" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
+	
+	<!-- Declare a folder (sub folder of the project root, to store testng results -->
+	<property name="test_results" location="testJUnit" />
+
+	<!-- Declare the path (relative to the basedir) where the compiled classes will be stored -->
+	<path id="classpath">
+		<pathelement location="build/classes" />
+		<fileset dir="WebContent/WEB-INF/lib" includes="**/*.jar"/>
+	</path>
+
+	<!-- Define the jacoco ant task -->
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+		<!-- On your servers, the jacocoant.jar file is stored in the ant/lib file-->
+		<classpath path="jacocoant.jar" />
+	</taskdef>
+
+	<!-- target used to delete any of the folders created by the antbuild -->
+	<target name="clean">
+		<delete dir="build" />
+		<delete dir="testJUnit" />
+		<delete dir="test-output"/>
+	</target>
+
+	<target name="compile_src_debug">
+        <mkdir dir="build/classes"/>
+        <mkdir dir="target"/>
+    	<mkdir dir="testJUnit"/>
+        <javac debug="on" debuglevel="lines,vars,source" srcdir="src" destdir="build/classes" 
+			classpathref="classpath" includeantruntime="false"/>
+    </target>
+
+
+<!-- target used to compile the test source code for be an artist, depends upon the source code being compiled for testing (with debug information)-->
+	<target name="compile_tests_debug" depends="compile_src_debug">
+	        <javac debug="on" debuglevel="lines,vars,source" srcdir="tests" destdir="build/classes" 
+	        	classpathref="classpath" includeantruntime="false">
+	            <classpath refid="classpath"/>
+	        </javac>
+	 </target>
+
+
+<target name="compile_for_tests" depends="compile_src_debug,compile_tests_debug" />
+	
+<target name="analysis" depends="clean,test_executionJunit" />
+
+
+
+	<target name="compile_src_production">
+        <mkdir dir="build/classes"/>
+        <mkdir dir="target"/>
+    	<mkdir dir="testJUnit"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="classpath" includeantruntime="false"/>
+		<copy todir="build/classes/rwb/config">
+		    <fileset dir="src/rwb/config">
+		       <exclude name="**/*.java"/>
+		    </fileset>
+		</copy>
+    </target>
+
+    
+
+<target name="compile_tests_production" depends="compile_src_production">
+	<javac srcdir="src" destdir="build/classes" classpathref="classpath" includeantruntime="false">
+        <classpath refid="classpath"/>
+    </javac>
+	<copy todir="build/classes/rwb/config">
+	    <fileset dir="src/rwb/config">
+	       <exclude name="**/*.java"/>
+	    </fileset>
+	</copy>
+</target>
+
+	
+<target name="compile_src_production_debug">
+        <mkdir dir="build/classes"/>
+        <mkdir dir="target"/>
+    	<mkdir dir="testJUnit"/>
+        <javac debug="on" debuglevel="lines,vars,source" srcdir="src" destdir="build/classes" 
+			classpathref="classpath" includeantruntime="false"/>
+    </target>
+
+    <target name="compile_tests_production_debug" depends="compile_src_production_debug">
+        <javac debug="on" debuglevel="lines,vars,source" srcdir="test" destdir="build/classes" 
+        	classpathref="classpath" includeantruntime="false">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+    
+	<!-- Junit -->
+     <target name="test_executionJunit" depends="clean,compile_tests_debug">
+        <jacoco:coverage destfile="target/jacoco.exec">
+            <junit fork="true" forkmode="once">
+            	<jvmarg value="-noverify"/>
+            	<formatter type="xml"/>
+            	<formatter type="plain"/>
+            	<classpath refid="classpath"/>
+            	<batchtest fork="yes" todir="${test_results}">
+            		<fileset dir="tests">
+            			<include name="**/*.java"/>
+            		</fileset>
+            	</batchtest>
+            </junit>
+        </jacoco:coverage>
+    </target>
+
+	<!-- target used to creaet a jar file of built production code -->
+	<target name="export_war" depends="clean,compile_src_production,test_executionJunit">
+		<mkdir dir="build/output" />
+		<war destfile="build/output/RemoteWebBox.war" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="WebContent">
+				<include name="**/*.*" />
+			</fileset>
+			<lib dir="libs">
+				<!--<exclude name = "portlet.jar"/>-->
+			</lib>
+			<classes dir="build/classes" />
+		</war>
+	</target>
+	<!-- dummy target that compiles both source and tests ready to test-->
+	
+
+</project>

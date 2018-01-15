@@ -1,0 +1,637 @@
+package rwb.java.vb.bo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.virtualbox_5_0.AccessMode;
+import org.virtualbox_5_0.DeviceType;
+import org.virtualbox_5_0.Holder;
+import org.virtualbox_5_0.IAppliance;
+import org.virtualbox_5_0.IDHCPServer;
+import org.virtualbox_5_0.IHostNetworkInterface;
+import org.virtualbox_5_0.IMachine;
+import org.virtualbox_5_0.IMedium;
+import org.virtualbox_5_0.INATNetwork;
+import org.virtualbox_5_0.IProgress;
+import org.virtualbox_5_0.ISnapshot;
+import org.virtualbox_5_0.IVirtualBox;
+import org.virtualbox_5_0.ImportOptions;
+import org.virtualbox_5_0.MediumVariant;
+import org.virtualbox_5_0.ProcessorFeature;
+import org.virtualbox_5_0.SessionState;
+import org.virtualbox_5_0.VirtualBoxManager;
+
+import rwb.java.divers.Log;
+import rwb.java.divers.Tools;
+import rwb.java.vb.dao.VirtualBoxDAO;;
+
+public class VirtualBoxBO {
+
+	/**
+	 * Attributes
+	 */
+	private static final String DHCPENABLED = "DHCPEnabled";
+	private static final String SHORTNAME = "ShortName";
+	private static final String IPV6ADDRESS = "IPv6Address";
+	
+	private List<MachineBO> listMachineBO;
+	private VirtualBoxManager vbm;
+	private IVirtualBox vbox;
+	private VirtualBoxDAO dao;
+	private HashMap<String, Object> hostInfos;
+	private HashMap<String, Object> hostOnlyNetworks;
+	private HashMap<String, Object> natNetworks;
+	private String pathMachineFolder;
+	
+	/**
+	 * Method for testing the code
+	 */
+	public VirtualBoxBO() {
+		//Do nothing because of the test
+	}
+
+	/**
+	 * 
+	 * @param dao
+	 */	
+	public VirtualBoxBO(VirtualBoxDAO dao, Boolean b ) {
+		try {
+			this.vbm = dao.getVbm();
+			this.vbox = dao.getVbm().getVBox();
+			this.dao = dao;
+			this.initHostInfos();
+			if (b){
+				this.initListMachineBO();
+				this.initHostOnlyNetworks();
+				this.initNATNetworks();
+				this.pathMachineFolder = this.vbox.getSystemProperties().getDefaultMachineFolder();
+			}
+		} catch (Exception e) {
+			Log.warning(e.getMessage());
+			 
+		}
+
+	}
+	
+	public String getPathMachineFolder() {
+		return pathMachineFolder;
+	}
+
+	public void setPathMachineFolder(String pathMachineFolder) {
+		this.pathMachineFolder = pathMachineFolder;
+	}
+
+	public List<MachineBO> getListMachineBO() {
+		return this.listMachineBO;
+	}
+
+	public void setListMachineBO(List<MachineBO> listMachineBO) {
+		this.listMachineBO = listMachineBO;
+	}
+
+	public IVirtualBox getVbox() {
+		return vbox;
+	}
+
+	public void setVbox(IVirtualBox vbox) {
+		this.vbox = vbox;
+	}
+
+	public VirtualBoxDAO getDao() {
+		return dao;
+	}
+
+	public void setDao(VirtualBoxDAO dao) {
+		this.dao = dao;
+	}
+
+	public void setVbm(VirtualBoxManager vbm) {
+		this.vbm = vbm;
+	}
+
+	public void setHostInfos(Map<String, Object> hostInfos) {
+		this.hostInfos = (HashMap<String, Object>) hostInfos;
+	}
+
+	public MachineBO getMachine(String name) {
+		return new MachineBO(this.vbm, name);
+
+	}
+
+	public String getMachineState(String name) {
+		return this.getMachineBO(name).getState();
+	}
+
+	public VirtualBoxManager getVbm() {
+		return this.vbm;
+	}
+
+	public void createMachine(Map<String, Object> settings, String name) {
+		if (this.getInfosMachine(name) == null) {
+			listMachineBO.add(new MachineBO(this.vbm, settings, name));
+		}
+	}
+
+	public void powerUpMachine(String name) {
+		try {
+			this.getMachineBO(name).powerUp();
+			
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+
+	}
+
+	public List<Object> powerDownMachine(String name) {
+		List<Object> error = new ArrayList<>();
+		try {
+			this.getMachineBO(name).powerDown();
+			error.add(false);
+		} catch (Exception e) {
+			error.add(true);
+			error.add("La machine n'a pas pu s'éteindre");
+			 
+		}
+		return error;
+
+	}
+
+	public List<Object> powerDownForcedMachine(String name) {
+		List<Object> error = new ArrayList<>();
+		try {
+			this.getMachineBO(name).powerDownForced();
+			error.add(false);
+		} catch (Exception e) {
+			error.add(true);
+			error.add("La machine n'a pas pu s'éteindre");
+			 
+		}
+		return error;
+
+	}
+
+	public Boolean modifMachine(Map<String, Object> settings, String name) {
+		Boolean result = false;
+		try {
+			this.getMachineBO(name).modifMachine(settings);
+			result = true;
+		} catch (Exception e) {
+			result = false;
+			 
+		}
+		return result;
+
+	}
+
+	public void deleteMachine(String name, String mode) {
+		this.getMachineBO(name).deleteMachine(mode);
+		this.listMachineBO.remove(this.getMachineBO(name));
+	}
+
+	public Map<String, Object> getInfosMachine(String name) {
+		Map<String, Object> map = new HashMap<>();
+		try {
+			map = this.getMachineBO(name).getInfos();
+		} catch (NullPointerException e) {
+			Log.warning(e.toString());
+			 
+			
+		}
+		return map;
+	}
+
+	public void initHostInfos() {
+		this.hostInfos = new HashMap<>();
+		this.hostInfos.put("machineFolder", this.vbox.getSystemProperties().getDefaultMachineFolder());
+		this.hostInfos.put("Acceleration3DAvailable", this.vbox.getHost().getAcceleration3DAvailable());
+		this.hostInfos.put("DomainName", this.vbox.getHost().getDomainName());
+		List<IMedium> listDVD = this.vbox.getHost().getDVDDrives();
+		long i = 0;
+		HashMap<String, Object> drives = new HashMap<>();
+		for (IMedium medium : listDVD) {
+			HashMap<String, Object> drive = new HashMap<>();
+			drive.put("Name", medium.getName());
+			drive.put("Description", medium.getDescription());
+			drives.put("DVD" + Long.toString(i), drive);
+			i++;
+		}
+		this.hostInfos.put("DVDDrives", drives);
+		this.hostInfos.put("FloppyDrives", this.vbox.getHost().getFloppyDrives());
+		this.hostInfos.put("MemoryAvailable", this.vbox.getHost().getMemoryAvailable());
+		this.hostInfos.put("MemorySize", this.vbox.getHost().getMemorySize());
+		this.hostInfos.put("NameServers", this.vbox.getHost().getNameServers());
+		List<IHostNetworkInterface> listNetworkInterfaces = this.vbox.getHost().getNetworkInterfaces();
+		long k = 0;
+		HashMap<String,Object> hostOnly = new HashMap<>();
+		HashMap<String,Object> bridged = new HashMap<>();
+		int compteurHostOnly = 0;
+		HashMap<String, Object> interfaces = new HashMap<>();
+		for (IHostNetworkInterface network : listNetworkInterfaces) {
+			HashMap<String, Object> interfacek = new HashMap<>();
+			interfacek.put("Name", network.getName());
+			interfacek.put("HardwareAdress", network.getHardwareAddress());
+			interfacek.put(DHCPENABLED, network.getDHCPEnabled());
+			interfacek.put("InterfaceType", network.getInterfaceType());
+			if (network.getInterfaceType().name() == "HostOnly"){
+				compteurHostOnly++;
+				HashMap<String,Object> host = new HashMap<>();
+				host.put("Name",network.getId());
+				host.put(SHORTNAME,network.getShortName());
+				hostOnly.put(String.valueOf(compteurHostOnly), host);
+			}
+			if (network.getInterfaceType().name() == "Bridged"){
+				bridged.put(network.getName(), network.getName());
+			}
+			interfacek.put("IPv4Adress", network.getIPAddress());
+			interfacek.put("IPv6Adress", network.getIPV6Address());
+			interfacek.put("IPV6NetworkMaskPrefixLength", network.getIPV6NetworkMaskPrefixLength());
+			interfacek.put("IPV6Supported", network.getIPV6Supported());
+			interfacek.put("NetworkMask", network.getNetworkMask());
+			interfacek.put("NetworkName", network.getNetworkName());
+			interfacek.put(SHORTNAME, network.getShortName());
+			interfaces.put("Interface" + k, interfacek);
+			k++;
+		}
+		hostOnly.put("NbHostOnly",compteurHostOnly);
+		this.hostInfos.put("HostOnlyNetworks", hostOnly);
+		this.hostInfos.put("BridgedNetwork", bridged);
+		this.hostInfos.put("Network", interfaces);
+		this.hostInfos.put("OperatingSystem", this.vbox.getHost().getOperatingSystem());
+		this.hostInfos.put("OSVersion", this.vbox.getHost().getOSVersion());
+		this.hostInfos.put("ProcessorCoreCount", this.vbox.getHost().getProcessorCoreCount());
+		this.hostInfos.put("LongMode", this.vbox.getHost().getProcessorFeature(ProcessorFeature.LongMode));
+		this.hostInfos.put("HWVirtEx", this.vbox.getHost().getProcessorFeature(ProcessorFeature.HWVirtEx));
+		this.hostInfos.put("NestedPaging", this.vbox.getHost().getProcessorFeature(ProcessorFeature.NestedPaging));
+		this.hostInfos.put("PAE", this.vbox.getHost().getProcessorFeature(ProcessorFeature.PAE));
+		this.hostInfos.put("ProcessorCount", this.vbox.getHost().getProcessorCount());
+		HashMap<String, Object> processors = new HashMap<>();
+		for (long j = 0; j < this.vbox.getHost().getProcessorCount(); j++) {
+			HashMap<String, Object> processor = new HashMap<>();
+			processor.put("Name", "Processor " + Long.toString(j));
+			processor.put("Description", this.vbox.getHost().getProcessorDescription(j));
+			processor.put("Speed", this.vbox.getHost().getProcessorSpeed(j));
+			processors.put("Processor " + Long.toString(j), processor);
+		}
+		this.hostInfos.put("processors", processors);
+		this.hostInfos.put("ProcessorOnlineCoreCount", this.vbox.getHost().getProcessorOnlineCoreCount());
+		this.hostInfos.put("ProcessorOnlineCount", this.vbox.getHost().getProcessorOnlineCount());
+		this.hostInfos.put("USBDeviceFilters", this.vbox.getHost().getUSBDeviceFilters());
+		this.hostInfos.put("UTCTime", this.vbox.getHost().getUTCTime());
+		this.hostInfos.put("VboxVersion", this.vbox.getVersion());
+		this.hostInfos.put("InternalNetworks", this.vbox.getInternalNetworks());
+
+		List<String> natnetworks = new ArrayList<>();
+		for (INATNetwork NAT : this.vbox.getNATNetworks()) {
+			natnetworks.add(NAT.getNetworkName());
+		}
+		this.hostInfos.put("NATNetworks", natnetworks);
+		this.hostInfos.put("HardDrives", this.vbox.getHardDisks());
+		
+	}
+
+	public Map<String, Object> getHostInfos() {
+		return this.hostInfos;
+	}
+
+	private void initListMachineBO() {
+		this.listMachineBO = new ArrayList<>();
+		for (IMachine machine : this.vbox.getMachines()) {
+			this.listMachineBO.add(new MachineBO(this.vbm, machine.getName()));
+		}
+
+	}
+
+	public MachineBO getMachineBO(String name) {
+		MachineBO returnBO = null;
+		for (MachineBO machineBo : listMachineBO) {
+			if (machineBo.getName().equals(name)) {
+				returnBO = machineBo;
+				break;
+			}
+		}
+		return returnBO;
+	}
+
+	public void disconnect() {
+		dao.disconnect();
+	}
+
+	public void importOVF(String ovfPath) {
+		try {
+			IAppliance appliance = vbox.createAppliance();
+			appliance.read(ovfPath);
+			appliance.interpret();
+
+			List<ImportOptions> manifeste = new ArrayList<>();
+			manifeste.add(ImportOptions.ImportToVDI);
+
+			IProgress prog = appliance.importMachines(manifeste);
+			prog.waitForCompletion(-1);
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+	}
+
+	public void exportOVF(String format, String machinePath, String machineName, boolean ova) {
+		try {
+			this.getMachineBO(machineName).exportToOVF(format, machinePath, ova);
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+	}
+
+	public IMedium createDrive(String machineName, String name, String format, String path, long size) {
+		try{
+			String pathhdd = path + machineName + "/" + name + "." + format;
+			IMedium medium = this.vbox.createMedium(format, pathhdd, AccessMode.ReadWrite, DeviceType.HardDisk);
+			List<MediumVariant> listMedium = new ArrayList<>();
+			listMedium.add(MediumVariant.Standard);
+
+
+			IProgress progress = medium.createBaseStorage(Tools.getHDDValue(size), listMedium);
+			progress.waitForCompletion(-1);
+			return medium;
+
+		}catch(Exception e){
+			Log.warning(e.getMessage());
+			 return null;
+		} 
+	}
+
+	public SessionState getSessionStateMachine(String name) {
+		return getMachineBO(name).getSessionState();
+	}
+
+	public void takeSnap(String machineName, String snapName) {
+		try {
+			this.getMachineBO(machineName).getSnapshotBO().takeSnap(snapName);
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+	}
+
+	public void deleteCurrentSnap(String name) {
+		try {
+			this.getMachineBO(name).getSnapshotBO().deleteCurrentSnap();
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+	}
+
+	public void deleteSnapById(String machineName, String snapId) {
+		try {
+			this.getMachineBO(machineName).getSnapshotBO().deleteSnapById(snapId);
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+	}
+
+	public void restoreFromSnapId(String machineName, String snapId) {
+		try {
+			this.getMachineBO(machineName).getSnapshotBO()
+					.restoreFromSnap(this.getMachineBO(machineName).getSnapshotBO().findSnapById(snapId));
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+	}
+
+	public void restoreFromSnapName(String machineName, String snapName) {
+		try {
+			this.getMachineBO(machineName).getSnapshotBO()
+					.restoreFromSnap(this.getMachineBO(machineName).getSnapshotBO().findSnapByName(snapName));
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			 
+		}
+	}
+
+	public String findSnapUuid(String machineName, String snapName) {
+		String r = "Snapshot not found";
+		try {
+			r = this.getMachineBO(machineName).getSnapshotBO().findSnapByName(snapName).getId();
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			  
+		}
+		return r;
+	}
+
+	public String findSnapName(String machineName, String uuid) {
+		String r = "Snapshot not found";
+		try {
+			r =  this.getMachineBO(machineName).getSnapshotBO().findSnapById(uuid).getName();
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			  
+		}
+		return r;
+	}
+
+	public List<ISnapshot> findSnapChildren(String name) {
+		List<ISnapshot> r = new ArrayList<>();
+		try {
+			r = this.getMachineBO(name).getSnapshotBO().findSnapChildren();
+		} catch (Exception e) {
+			Log.warning(e.toString());
+			   
+		}
+		return r;
+	}
+	
+
+	
+	public long findNumberOfSnap (String name) {
+		long r = 0L;
+		try {
+			r = this.getMachineBO(name).getSnapshotBO().findNumberOfSnap();
+		} catch (Exception e) {
+			Log.warning(e.toString()); 
+			   
+		}
+		return r;
+	}
+	
+	public Map<String,Object> getTreeSnapshotsName (String name) {
+		return this.getMachineBO(name).getSnapshotBO().getTreeSnapshotsName();
+	}
+
+
+	public byte[] getPreviewMachine(String name) {
+		MachineBO machine = this.getMachine(name);
+		if (!"PoweredOff".equals(machine.getState())) {
+			return machine.getPreview();
+		} else {
+			return null;
+		}
+	}
+	
+	public void deleteHostOnlyNetwork(String id){
+		IProgress progress = this.vbox.getHost().removeHostOnlyNetworkInterface(id);
+		progress.waitForCompletion(-1);
+		this.initHostInfos();
+	}
+	
+	public Map<String,Object> getHostOnlyNetworks(){
+		return this.hostOnlyNetworks;
+	}
+
+	public Map<String,Object> getNATNetworks(){
+		return this.natNetworks;
+	}
+	
+	public void initHostOnlyNetworks(){
+		List<IHostNetworkInterface> listNetworkInterfaces = this.vbox.getHost().getNetworkInterfaces();
+		this.hostOnlyNetworks = new HashMap<>();
+		int compteurHostOnly = 0;
+		for (IHostNetworkInterface network : listNetworkInterfaces) {
+			if (network.getInterfaceType().name() == "HostOnly"){
+				compteurHostOnly++;
+				HashMap<String,Object> host = new HashMap<>();
+				host.put("Name",network.getId());
+				host.put(SHORTNAME,network.getShortName());
+				host.put("IPv4Address", network.getIPAddress());
+				host.put(IPV6ADDRESS, network.getIPV6Address());
+				host.put("IPv4NetworkMask", network.getNetworkMask());
+				host.put("IPv6NetworkMask", network.getIPV6NetworkMaskPrefixLength());
+				host.put(DHCPENABLED, network.getDHCPEnabled());
+			
+				List<IDHCPServer> dhcps = this.vbox.getDHCPServers();
+				for(IDHCPServer dhcp:dhcps){
+					host.put("DHCPServerIpAddress", dhcp.getIPAddress());
+					host.put("DHCPLowerIp", dhcp.getLowerIP());
+					host.put("DHCPUpperIp", dhcp.getUpperIP());
+					host.put("DHCPNetworkMask", dhcp.getNetworkMask());
+				}
+					
+				this.hostOnlyNetworks.put(String.valueOf(compteurHostOnly), host);
+			}
+		}
+		this.hostOnlyNetworks.put("NbHostOnly",compteurHostOnly);
+	}
+	
+	public void initNATNetworks(){
+		this.natNetworks = new HashMap<>();
+		for(INATNetwork nat:this.vbox.getNATNetworks()){
+			HashMap<String,Object> mapNAT = new HashMap<>();
+			mapNAT.put("Name", nat.getNetworkName());
+			mapNAT.put("CIDRv4", nat.getNetwork());
+			mapNAT.put("DHCP", nat.getNeedDhcpServer());
+			mapNAT.put("IPv6", nat.getIPv6Enabled());
+			mapNAT.put("CIDRv6", nat.getIPv6Prefix());
+			mapNAT.put("DefaultIPv6Route", nat.getAdvertiseDefaultIPv6RouteEnabled());
+			mapNAT.put("PortForwarding4", nat.getPortForwardRules4());
+			mapNAT.put("PortForwarding6", nat.getPortForwardRules6());
+			this.natNetworks.put(nat.getNetworkName(), mapNAT);
+		}
+	}
+
+	public void createHostOnlyNetwork(){ 
+		Holder<IHostNetworkInterface> holder = new Holder<>();
+		holder.value = new IHostNetworkInterface("test", this.vbm.getVBox().getObjMgr(), this.vbox.getRemoteWSPort());
+		IProgress progress = this.vbox.getHost().createHostOnlyNetworkInterface(holder);
+		progress.waitForCompletion(-1);
+		this.initHostOnlyNetworks();
+		this.initHostInfos();
+	}
+	
+	public void createNATNetwork(String name){
+		this.vbox.createNATNetwork(name);
+		this.initHostInfos();
+		this.initNATNetworks();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void modifHostOnlyNetwork(Map<String,Object> settings){
+		try{
+			IHostNetworkInterface network = this.vbox.getHost().findHostNetworkInterfaceById((String)((HashMap<String,Object>)settings.get("host")).get("Name"));
+			network.enableStaticIPConfig((String) settings.get("IPv4Address"), (String) settings.get("IPv4NetworkMask"));
+			if((String) settings.get(IPV6ADDRESS) != null){
+				network.enableStaticIPConfigV6((String) settings.get(IPV6ADDRESS), Long.valueOf((String) settings.get("IPv6NetworkMask")));
+			}
+			this.modifyDHCPServer(network,settings);	
+			this.initHostOnlyNetworks();
+			this.initHostInfos();
+		}catch(Exception e){
+			Log.warning(e.toString()); 
+			   
+		}
+		
+	}
+	
+	private void modifyDHCPServer(IHostNetworkInterface network, Map<String, Object> settings) {
+		for(IDHCPServer dhcp:this.vbox.getDHCPServers()){
+			if(network.getName() == dhcp.getNetworkName()){ 
+				dhcp.setEnabled(Boolean.valueOf((String)settings.get(DHCPENABLED)));
+				if(Boolean.valueOf((String)settings.get(DHCPENABLED))){
+					dhcp.setConfiguration((String) settings.get("DHCPServerIpAddress"), (String) settings.get("DHCPLowerIp"), (String) settings.get("DHCPUpperIp"), (String) settings.get("DHCPNetworkMask"));
+				}
+			}				
+		}
+	}
+
+	public void modifNATNetwork(String name,Map<String,Object> settings){
+		INATNetwork nat = this.vbox.findNATNetworkByName(name);
+		nat.setNetworkName((String) settings.get("Name"));
+		nat.setEnabled(Boolean.valueOf("Enabled"));
+		nat.setNetwork((String) settings.get("CIDR")); 
+		nat.setNeedDhcpServer(Boolean.valueOf((String) settings.get("DHCP")));
+		nat.setIPv6Prefix((String) settings.get("IPv6"));
+		nat.setAdvertiseDefaultIPv6RouteEnabled(Boolean.valueOf( (String)settings.get("DefaultIPv6Route")));
+		this.initHostInfos();
+		this.initNATNetworks();
+	}
+	
+	public void deleteNATNetwork(String name){
+		INATNetwork network = this.vbox.findNATNetworkByName(name);
+		this.vbox.removeNATNetwork(network);
+		this.initHostInfos();
+		this.initNATNetworks();
+	}
+	
+	public List<String> getNATNetwork(){
+		List<INATNetwork> liste = this.vbox.getNATNetworks();
+		List<String> listeNamesNAT = new ArrayList<>();
+		for(INATNetwork n:liste){
+			listeNamesNAT.add(n.getNetworkName());
+		}
+		return listeNamesNAT;
+	}
+	
+	public void createInfosMachine(String name){
+		this.getMachineBO(name).createInfosMachine();
+	}
+
+	public void addNATForwardRoute(String [] settings){
+		this.vbox.findNATNetworkByName(settings[0]).addPortForwardRule(Boolean.valueOf(settings[1]), settings[2],org.virtualbox_5_0.NATProtocol.fromValue(settings[3]), settings[4],Integer.valueOf(settings[5]), settings[6],Integer.valueOf(settings[7]));
+	}
+	
+	public void deleteNATForwardRoute(String name, String isIpv6, String ruleName){
+		this.vbox.findNATNetworkByName(name).removePortForwardRule(Boolean.valueOf(isIpv6),ruleName);
+	}
+	
+	public Map<String,Object> getSharedFoldersMachine(String name){
+		return (HashMap<String, Object>) this.getMachine(name).getSharedFolders();
+	}
+
+	public String refreshMACAdpaterMachine(String nameMachine, Long adapter){
+		String newMAC = this.vbox.getHost().generateMACAddress();
+		HashMap<String,Object> settings = new HashMap<>();
+		HashMap<String,Object> network = new HashMap<>();
+		HashMap<String,Object> adapterMap = new HashMap<>();
+		adapterMap.put("number", adapter);
+		adapterMap.put("MAC", newMAC);
+		network.put("adapter", adapterMap);
+		settings.put("network", network);
+		this.modifMachine(settings, nameMachine);
+		return newMAC;
+	}
+}

@@ -1,0 +1,117 @@
+package rwb.servlet.general;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+
+import rwb.java.bdd.bo.BddServeurBO;
+import rwb.java.divers.Tools;
+import rwb.java.server.bo.ServeurBO;
+import rwb.java.vb.bo.VirtualBoxBO;
+import rwb.java.vb.dao.VirtualBoxDAO;
+
+
+/**
+ * Servlet implementation class SidebarContent
+ */
+@WebServlet("/SidebarContent")
+public class SidebarContent extends HttpServlet {
+	
+	/**
+	 * Attributes
+	 */ 
+	private static final String STATE = "state";
+	private static final long serialVersionUID = 1L;
+	private boolean error = false;
+	VirtualBoxDAO dao = null;
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public SidebarContent() {
+		super();
+	}
+
+	/**
+	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	@SuppressWarnings("unchecked")
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		HashMap<String, Object> list = new HashMap<>();
+
+		BddServeurBO bdd = new BddServeurBO();
+		List <ServeurBO> listSrv = bdd.getServeurs((String)request.getSession().getAttribute("login-id")); 
+		
+
+		for (ServeurBO s : listSrv) {
+			error = false;
+			HashMap<String, Object> server = new HashMap<>();
+			try {
+
+				dao = new VirtualBoxDAO(s); 
+				error = !dao.isAvailable();
+				
+
+			} catch (Exception e) {
+				error = true;
+				throw new RuntimeException(e);
+			}
+
+			server.put("name", s.getName());
+			server.put("id", s.getId());
+
+			if (!error && s.getState()) {
+				server.put(STATE, "available");
+				VirtualBoxBO vbox = new VirtualBoxBO(dao,true); 
+				HashMap<String,Object> map = (HashMap<String,Object>)vbox.getHostInfos();
+				server.put("cpuMax", map.get("ProcessorCount").toString());
+				server.put("ramMax", map.get("MemorySize").toString());
+			}else{
+				server.put(STATE, "unavailable");
+			}
+			
+			HashMap<String, Object> vms = new HashMap<>();
+			for (Map.Entry<String,Object> m : ((HashMap<String,Object>)bdd.getVm("user", (String)request.getSession().getAttribute("login-id"))).entrySet()) { 
+				HashMap<String, Object> vm = (HashMap<String, Object>) m.getValue();
+				if(vm.get("idServer").equals(s.getId())){
+					vm.put("name", vm.get("name"));
+					vm.put("os", vm.get("os"));
+					vm.put(STATE, vm.get("name"));
+					vm.put("ico", Tools.getOsIcon(vm.get("os").toString()));
+
+					vms.put("vm-" + vm.get("name"), vm);
+				}
+				
+			}
+			server.put("vms", vms);
+
+			list.put("server" + s.getId(), server);
+
+		}
+		bdd.close();
+		Gson gson = new Gson();
+		String json = gson.toJson(list);
+
+		if (list.isEmpty()) {
+			response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+			response.getWriter().write(json);
+		} else {
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.getWriter().write(json);
+		}
+
+	}
+
+}
