@@ -1,6 +1,6 @@
 # RemoteWebBox-java
 
-![alt text](https://github.com/romainmnr/RemoteWebBox-java/blob/master/assets/1024-1024-max.png "Logo")
+![alt text](https://github.com/romainmnr/RemoteWebBox-java/blob/master/assets/512-512-max.png "Logo")
 
 This project is a web interface for virtualbox.<br>
 It's build in Java EE and use the virtualbox SDK (soap API).<br>
@@ -8,12 +8,12 @@ It's build in Java EE and use the virtualbox SDK (soap API).<br>
 # Preview
 
 
-![alt text](https://github.com/romainmnr/RemoteWebBox-java/blob/master/assets/preview.png "Logo")
+![alt text](https://github.com/romainmnr/RemoteWebBox-java/blob/master/assets/preview.png "Preview")
 
 # Architecture
 
 
-![alt text](https://github.com/romainmnr/RemoteWebBox-java/blob/master/assets/SchemaComp.jpg"Logo")
+![alt text](https://github.com/romainmnr/RemoteWebBox-java/blob/master/assets/SchemaComp.jpg "schema")
 
 
 # Disclaimer
